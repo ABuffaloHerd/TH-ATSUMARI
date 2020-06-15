@@ -1,0 +1,41 @@
+shot_image  = "./shot.png"
+
+ShotData
+{
+	id = 1 
+	rect = (0,0,15,56)
+	render = ADD_ARGB
+	alpha=150
+	collision = 15
+}
+
+
+ShotData
+{
+	id = 2 //ID
+	rect = (1,130,48,190)
+		AnimationData{
+		animation_data=(4,34,130,50,190)
+        	animation_data=(4,34,197,50,257)
+
+	}
+	render = ALPHA //•`‰æ•û–@
+//	alpha=150
+	collision = 14
+}
+
+ShotData{
+	id = 3
+	rect = (120,194,179,253)
+	render = ALPHA
+	alpha=155
+	collision = 15
+}
+
+ShotData{
+	id = 4
+	rect = (17,251,31,266)
+	render = ALPHA
+	alpha=155
+	collision = 15
+}

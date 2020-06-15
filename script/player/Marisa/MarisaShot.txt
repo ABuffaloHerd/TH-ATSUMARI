@@ -1,0 +1,20 @@
+shot_image = "./Marisa.png"
+ShotData{ // Standard Shot
+	id = 1
+	rect = (51,199,67,231)
+	render = ALPHA
+	alpha = 255
+	collision = 8
+}
+ShotData{ // Illusion Laser
+	id = 2
+	rect = (264,0,278,512)
+	render = ADD
+	alpha = 255
+}
+ShotData{ // Super Shortwave
+	id = 3
+	rect = (0,255,32,270)
+	render = ALPHA
+	alpha = 90
+}

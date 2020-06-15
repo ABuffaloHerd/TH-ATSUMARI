@@ -1,0 +1,142 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["What am I doing?"]
+#Text["AAAAAA"] 
+
+#include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
+
+//Declare some global variables
+let objBoss;
+let objScene = GetEnemyBossSceneObjectID();
+let count = 0;
+
+@Event{
+  alternative(GetEventType())
+  case(EV_REQUEST_LIFE)
+  {
+    SetScriptResult(1500);
+  }
+  case(EV_REQUEST_TIMER)
+  {
+    SetScriptResult(60);
+  }
+  case(EV_REQUEST_SPELL_SCORE)
+  {
+    SetScriptResult(1000000);
+  }
+}
+
+@Initialize{
+  objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+  ObjEnemy_Regist(objBoss);
+
+  //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+
+  ObjEnemyBossScene_StartSpell(objScene); // Begin spellcard
+
+
+  DrawLoop;
+  TFinalize;
+}
+
+
+
+@MainLoop{
+  //Boss hitbox move to boss center
+  ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32);
+
+  //Player hitbox 
+  ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+  if(count % 30 == 0){
+    Fire1;
+  }
+
+
+  if(count % 10 == 0){
+    Fire2;
+  }
+
+  count ++;
+  yield;
+}
+
+//Draws rumia
+task DrawLoop{
+  let imgRumia = GetCurrentScriptDirectory() ~ "ExRumia.png"; // Set imgRumia to the actual rumia png
+  ObjPrim_SetTexture(objBoss, imgRumia); // Set objBoss texture to imgRumia
+  ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64); // Spritesheet coords for one texture
+  ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
+}
+
+task Fire1{
+  //Check that boss is alive
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0)
+  {
+    return;
+  }
+
+  let angleToPlayer = GetAngleToPlayer(objBoss);
+  CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleToPlayer, DS_BALL_S_RED, 3);
+}
+
+task Fire2{
+  //Check that boss is alive
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0)
+  {
+    return;
+  }
+  let angleToPlayer = GetAngleToPlayer(objBoss);
+  CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleToPlayer, DS_BALL_BS_PURPLE, 2); // Middle
+  CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleToPlayer - 20, DS_BALL_M_ORANGE, 2);
+  CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleToPlayer + 20, DS_BALL_M_ORANGE, 2);
+  CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleToPlayer - 10, DS_BALL_M_ORANGE, 2);
+  CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleToPlayer + 10, DS_BALL_M_ORANGE, 2);
+}
+
+task TFinalize {
+  //Don't do anything until the boss life = 0
+  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){
+    yield;
+  }
+
+  //Add spellcard bonuses
+  if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT) + ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0)
+  {
+    AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE);
+  }
+
+  Obj_Delete(objBoss); //Delete boss
+  DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE); // Immediately delete all shots
+  SetAutoDeleteObject(true); // Auto delete objects
+  CloseScript(GetOwnScriptID()); // Close the script
+  return; //Fuck off
+}
+
+task Movement
+{
+  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
+  {
+    ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX() + 90, GetCenterX() - 90), rand(GetCenterX() - 60, GetCenterX() - 90), 120)
+  }
+}
+
+function wait(n)
+{
+  // Does what it's called
+  loop(n)
+  {
+    yield;
+  }
+}
+
+function GetCenterX()
+{
+  return GetStgFrameWidth() / 2; // Returns half the width of arena
+}
+
+function GetCenterY()
+{
+  return GetStgFrameHeight() / 2; // Returns half the height of the arena
+}
