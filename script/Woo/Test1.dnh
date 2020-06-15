@@ -10,7 +10,8 @@ let objBoss;
 let objScene = GetEnemyBossSceneObjectID();
 let count = 0;
 
-@Event{
+@Event
+{
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
@@ -26,7 +27,8 @@ let count = 0;
   }
 }
 
-@Initialize{
+@Initialize
+{
   objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
   ObjEnemy_Regist(objBoss);
 
@@ -42,20 +44,33 @@ let count = 0;
 
 
 
-@MainLoop{
+@MainLoop
+{
   //Boss hitbox move to boss center
   ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32);
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
 
-  if(count % 30 == 0){
-    Fire1;
-  }
+  // if(count % 30 == 0 && count > 120)
+  // {
+  //   Fire1;
+  // }
 
 
-  if(count % 10 == 0){
-    Fire2;
+  // if(count % 10 == 0)
+  // {
+  //   Fire2;
+  // }
+
+  // if(count % 76 == 0)
+  // {
+  //   Fire3;
+  // }
+
+  if(count % 50 == 0 && count > 70)
+  {
+    FireRing;
   }
 
   count ++;
@@ -63,14 +78,16 @@ let count = 0;
 }
 
 //Draws rumia
-task DrawLoop{
+task DrawLoop
+{
   let imgRumia = GetCurrentScriptDirectory() ~ "ExRumia.png"; // Set imgRumia to the actual rumia png
   ObjPrim_SetTexture(objBoss, imgRumia); // Set objBoss texture to imgRumia
   ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64); // Spritesheet coords for one texture
   ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
 }
 
-task Fire1{
+task Fire1
+{
   //Check that boss is alive
   if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0)
   {
@@ -81,7 +98,8 @@ task Fire1{
   CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleToPlayer, DS_BALL_S_RED, 3);
 }
 
-task Fire2{
+task Fire2
+{
   //Check that boss is alive
   if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0)
   {
@@ -95,16 +113,49 @@ task Fire2{
   CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleToPlayer + 10, DS_BALL_M_ORANGE, 2);
 }
 
-task TFinalize {
+task Fire3
+{
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0)
+  {
+    return;
+  }
+  ObjMove_SetDestAtWeight(objBoss, GetCenterX() + 20, GetCenterY() - 30, 20, 10);
+
+  wait(60);
+
+  //Shoot
+  CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, GetAngleToPlayer(objBoss), 0.5, 24, DS_BALL_S_ORANGE, 1);
+  CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, GetAngleToPlayer(objBoss) + 10, 0.5, 24, DS_BALL_S_ORANGE, 1);
+  CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, GetAngleToPlayer(objBoss) - 10, 0.5, 24, DS_BALL_S_ORANGE, 1);
+}
+
+task FireRing
+{
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0)
+  {
+    return;
+  }
+
+  let angleT = GetAngleToPlayer(objBoss);
+  loop(20)
+  {
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, DS_BALL_S_RED, 5);
+    angleT += 360/20;
+  }
+}
+
+task TFinalize
+{
   //Don't do anything until the boss life = 0
-  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0){
+  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
+  {
     yield;
   }
 
   //Add spellcard bonuses
   if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT) + ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0)
   {
-    AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE);
+    AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
   }
 
   Obj_Delete(objBoss); //Delete boss
@@ -118,7 +169,7 @@ task Movement
 {
   while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
   {
-    ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX() + 90, GetCenterX() - 90), rand(GetCenterX() - 60, GetCenterX() - 90), 120)
+    ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX() + 90, GetCenterX() - 90), rand(GetCenterX() - 60, GetCenterX() - 90), 120);
   }
 }
 
