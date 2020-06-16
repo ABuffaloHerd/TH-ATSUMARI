@@ -15,7 +15,7 @@ let count = 0;
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(1500);
+    SetScriptResult(4500);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -68,9 +68,19 @@ let count = 0;
   //   Fire3;
   // }
 
-  if(count % 50 == 0 && count > 70)
+  // if(count % 50 == 0 && count > 70)
+  // {
+  //   FireRing(70);
+  // }
+
+  if(count % 126 == 0 && count > 120)
   {
-    FireRing;
+    SpamFire;
+  }
+
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) < 1500 && count % 420 == 0)
+  {
+    FireCircle;
   }
 
   count ++;
@@ -129,7 +139,44 @@ task Fire3
   CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, GetAngleToPlayer(objBoss) - 10, 0.5, 24, DS_BALL_S_ORANGE, 1);
 }
 
-task FireRing
+task FireCircle
+{
+  ascent(i in 0..360)
+  {
+    i ++;
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, i + 90, DS_ICE_RED, 5);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, i + 90 * -1, DS_ICE_RED, 5);
+    wait(1);
+  }
+}
+
+task FireLine
+{
+  let angleT = GetAngleToPlayer(objBoss);
+  ascent (i in -1..2) 
+  {
+    ascent(x in 0..3)
+    {
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 4 - x/6, angleT + i*15, DS_RICE_M_SKY, 5);
+    }
+  }
+}
+
+task SpamFire
+{
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0)
+  {
+    return;
+  }
+
+  loop(200)
+  {
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, rand(0, 360), DS_BALL_SS_ORANGE, 2);
+    wait(0.5);
+  }
+}
+
+task FireRing(x)
 {
   if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) <= 0)
   {
@@ -137,10 +184,10 @@ task FireRing
   }
 
   let angleT = GetAngleToPlayer(objBoss);
-  loop(20)
+  loop(x)
   {
     CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, DS_BALL_S_RED, 5);
-    angleT += 360/20;
+    angleT += 360/x;
   }
 }
 
@@ -167,9 +214,9 @@ task TFinalize
 
 task Movement
 {
-  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
   {
-    ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX() + 90, GetCenterX() - 90), rand(GetCenterX() - 60, GetCenterX() - 90), 120);
+    ObjMove_SetDestAtFrame(objBoss, rand(GetCenterX() + 90, GetCenterX() - 90), rand(GetCenterX() - 60, GetCenterX() - 90), 60);
   }
 }
 
