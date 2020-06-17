@@ -1,0 +1,145 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Laser Test"]
+#Text["BVVVVV"] 
+
+#include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
+
+//Declare some global variables
+let objBoss;
+let objScene = GetEnemyBossSceneObjectID();
+let count = 0;
+
+@Event
+{
+  alternative(GetEventType())
+  case(EV_REQUEST_LIFE)
+  {
+    SetScriptResult(4500);
+  }
+  case(EV_REQUEST_TIMER)
+  {
+    SetScriptResult(60);
+  }
+  case(EV_REQUEST_SPELL_SCORE)
+  {
+    SetScriptResult(1000000);
+  }
+}
+
+@Initialize
+{
+  objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+  ObjEnemy_Regist(objBoss);
+
+  //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+
+
+  DrawLoop;
+  TFinalize;
+}
+
+@MainLoop 
+{
+  //Boss hitbox move to boss center
+  ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32);
+
+  //Player hitbox 
+  ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+  if(count > 30 && count % 70 == 0)
+  {
+    ShootRing;
+  }
+
+  if(count > 60 && count % 90 == 0)
+  {
+    Laser;
+  }
+
+  count++;
+  yield;
+}
+
+//Draws rumia
+task DrawLoop
+{
+  let imgRumia = GetCurrentScriptDirectory() ~ "ExRumia.png"; // Set imgRumia to the actual rumia png
+  ObjPrim_SetTexture(objBoss, imgRumia); // Set objBoss texture to imgRumia
+  ObjSprite2D_SetSourceRect(objBoss, 64, 1, 127, 64); // Spritesheet coords for one texture
+  ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
+}
+
+task Laser
+{
+  let player = GetAngleToPlayer(objBoss);
+  ascent (i in 0..10) {
+    CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), (player - 20) + (i * 6), 512, 20, 20, DS_BEAM_YELLOW, 30);
+    wait(10);
+  }
+
+}
+
+task ShootRing
+{
+  let angleT = GetAngleToPlayer(objBoss);
+
+ascent (i in 1..10) {
+    loop(10)
+    {
+      let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i, angleT, DS_BALL_S_ORANGE, 2);
+      angleT += 360/10;
+      BulletMovement(object, 1.2);
+    }
+
+    wait(20);
+    loop(10)
+    {
+      let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i, angleT * - 1, DS_BALL_S_SKY, 2);
+      angleT += 360/10;
+      BulletMovement(object, -1.2);
+    }
+
+  }
+}
+
+task BulletMovement(bullet, arg)
+{
+  wait(50);
+  ObjMove_SetAngularVelocity(bullet, arg);
+}
+//Finishing task
+task TFinalize
+{
+  //Don't do anything until the boss life = 0
+  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
+  {
+    yield;
+  }
+
+  Obj_Delete(objBoss); //Delete boss
+  DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE); // Immediately delete all shots
+  SetAutoDeleteObject(true); // Auto delete objects
+  CloseScript(GetOwnScriptID()); // Close the script
+  return; //Fuck off
+}
+
+function wait(n)
+{
+  // Does what it's called
+  loop(n)
+  {
+    yield;
+  }
+}
+
+function GetCenterX()
+{
+  return GetStgFrameWidth() / 2; // Returns half the width of arena
+}
+
+function GetCenterY()
+{
+  return GetStgFrameHeight() / 2; // Returns half the height of the arena
+}
