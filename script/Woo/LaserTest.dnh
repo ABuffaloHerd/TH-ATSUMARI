@@ -58,6 +58,16 @@ let count = 0;
     Laser;
   }
 
+  if(count > 120 && count % 80 == 0)
+  {
+    ExtraSpam;
+  }
+
+  if(count > 200 && count % 169 == 0)
+  {
+    randomMovement;
+  }
+
   count++;
   yield;
 }
@@ -71,11 +81,20 @@ task DrawLoop
   ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
 }
 
+task randomMovement
+{
+  ObjMove_SetDestAtWeight(objBoss, rand(40, GetStgFrameWidth() - 40), rand(20, GetCenterY() - 20), 20, 4);
+}
+
 task Laser
 {
-  let player = GetAngleToPlayer(objBoss);
-  ascent (i in 0..10) {
-    CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), (player - 20) + (i * 6), 512, 20, 20, DS_BEAM_YELLOW, 30);
+  let angle = 0;
+
+  loop(20)
+  {
+    angle += rand(0, 3);
+    CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angle, 512, 20, 20, DS_BEAM_YELLOW, 30);
+    angle += 360/20;
     wait(10);
   }
 
@@ -85,29 +104,53 @@ task ShootRing
 {
   let angleT = GetAngleToPlayer(objBoss);
 
-ascent (i in 1..10) {
-    loop(10)
-    {
-      let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i, angleT, DS_BALL_S_ORANGE, 2);
-      angleT += 360/10;
-      BulletMovement(object, 1.2);
-    }
-
-    wait(20);
-    loop(10)
-    {
-      let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i, angleT * - 1, DS_BALL_S_SKY, 2);
-      angleT += 360/10;
-      BulletMovement(object, -1.2);
-    }
-
+  loop(20)
+  {
+    let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, DS_BALL_S_ORANGE, 2);
+    angleT += 360/20;
+    BulletMovement(object);
   }
+
 }
 
-task BulletMovement(bullet, arg)
+
+task ExtraSpam
 {
-  wait(50);
-  ObjMove_SetAngularVelocity(bullet, arg);
+  let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.4, 0, DS_BALL_M_BLUE, 4);
+  let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.4, 0, DS_BALL_M_BLUE, 4);
+  ExtraSpamCommands(obj1);
+  ExtraSpamCommands(obj2);
+}
+
+task ExtraSpamCommands(object)
+{
+  while(ObjMove_GetSpeed(object) > 0)
+  {
+    yield;
+  }
+
+  let angle = rand(0, 6);
+  loop(30)
+  {
+    CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 3, angle, DS_NEEDLE_SKY, 40);
+    angle += 360/30;
+  }
+  
+  Obj_Delete(object);
+}
+
+task BulletMovement(bullet)
+{
+  ObjMove_SetAcceleration(bullet, -0.2);
+
+  while(ObjMove_GetSpeed(bullet) > 0) 
+  {
+    yield;
+  }
+
+  ObjMove_SetAngle(bullet, GetAngleToPlayer(bullet));
+  ObjMove_SetAcceleration(bullet, 0);
+  ObjMove_SetSpeed(bullet, 10);
 }
 //Finishing task
 task TFinalize
