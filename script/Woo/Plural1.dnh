@@ -11,6 +11,7 @@
 
 @Initialize
 {
+  TPlural;
 }
 
 
@@ -24,6 +25,8 @@ task TPlural{
   let obj = ObjEnemyBossScene_Create();
   ObjEnemyBossScene_Add(obj, 0, dir ~ "./Nonspell1.dnh");
   ObjEnemyBossScene_Add(obj, 0, dir ~ "./LaserCircle.dnh");
+
+  ObjEnemyBossScene_Regist(obj);
 
   while(!Obj_IsDeleted(obj))
   {

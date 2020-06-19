@@ -1,6 +1,6 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["Sundial"]
+#Title["Solar Sign \"Sundial Flare\""]
 #Text["Spell 1"] 
 
 #include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
@@ -84,7 +84,7 @@ task DrawLoop
 
 task randomMovement
 {
-  ObjMove_SetDestAtWeight(objBoss, rand(40, GetStgFrameWidth() - 40), rand(20, GetCenterY() - 20), 20, 4);
+  ObjMove_SetDestAtWeight(objBoss, rand(100, GetStgFrameWidth() - 100), rand(40, GetCenterY() - 40), 20, 4);
 }
 
 task Laser
@@ -117,8 +117,8 @@ task ShootRing
 
 task ExtraSpam
 {
-  let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.4, 0, DS_BALL_M_BLUE, 4);
-  let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.4, 0, DS_BALL_M_BLUE, 4);
+  let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.5, 0, DS_BALL_M_BLUE, 4);
+  let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.5, 0, DS_BALL_M_BLUE, 4);
   ExtraSpamCommands(obj1);
   ExtraSpamCommands(obj2);
 }
