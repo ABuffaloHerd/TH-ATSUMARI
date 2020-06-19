@@ -1,13 +1,12 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["Laser Test"]
-#Text["BVVVVV"] 
+#Title["base"]
+#Text["base file for nonspells"] 
 
 #include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
 
 //Declare some global variables
 let objBoss;
-let objScene = GetEnemyBossSceneObjectID();
 let count = 0;
 
 @Event
@@ -15,11 +14,11 @@ let count = 0;
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(4500);
+    SetScriptResult(2000);
   }
   case(EV_REQUEST_TIMER)
   {
-    SetScriptResult(60);
+    SetScriptResult(99);
   }
   case(EV_REQUEST_SPELL_SCORE)
   {
@@ -27,14 +26,14 @@ let count = 0;
   }
 }
 
-@Initialize
+
+@Initialize 
 {
   objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
   ObjEnemy_Regist(objBoss);
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
-
 
   DrawLoop;
   TFinalize;
@@ -47,32 +46,9 @@ let count = 0;
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
-
-  if(count > 30 && count % 70 == 0)
-  {
-    ShootRing;
-  }
-
-  if(count > 60 && count % 90 == 0)
-  {
-    Laser;
-  }
-
-  if(count > 120 && count % 80 == 0)
-  {
-    ExtraSpam;
-  }
-
-  if(count > 200 && count % 169 == 0)
-  {
-    randomMovement;
-  }
-
-  count++;
   yield;
 }
 
-//Draws rumia
 task DrawLoop
 {
   let imgRumia = GetCurrentScriptDirectory() ~ "ExRumia.png"; // Set imgRumia to the actual rumia png
@@ -81,78 +57,6 @@ task DrawLoop
   ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
 }
 
-task randomMovement
-{
-  ObjMove_SetDestAtWeight(objBoss, rand(40, GetStgFrameWidth() - 40), rand(20, GetCenterY() - 20), 20, 4);
-}
-
-task Laser
-{
-  let angle = 0;
-
-  loop(20)
-  {
-    angle += rand(0, 3);
-    CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angle, 512, 20, 20, DS_BEAM_YELLOW, 30);
-    angle += 360/20;
-    wait(10);
-  }
-
-}
-
-task ShootRing
-{
-  let angleT = GetAngleToPlayer(objBoss);
-
-  loop(20)
-  {
-    let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, DS_BALL_S_ORANGE, 2);
-    angleT += 360/20;
-    BulletMovement(object);
-  }
-
-}
-
-
-task ExtraSpam
-{
-  let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.4, 0, DS_BALL_M_BLUE, 4);
-  let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.4, 0, DS_BALL_M_BLUE, 4);
-  ExtraSpamCommands(obj1);
-  ExtraSpamCommands(obj2);
-}
-
-task ExtraSpamCommands(object)
-{
-  while(ObjMove_GetSpeed(object) > 0)
-  {
-    yield;
-  }
-
-  let angle = rand(0, 6);
-  loop(30)
-  {
-    CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 3, angle, DS_NEEDLE_SKY, 40);
-    angle += 360/30;
-  }
-  
-  Obj_Delete(object);
-}
-
-task BulletMovement(bullet)
-{
-  ObjMove_SetAcceleration(bullet, -0.2);
-
-  while(ObjMove_GetSpeed(bullet) > 0) 
-  {
-    yield;
-  }
-
-  ObjMove_SetAngle(bullet, GetAngleToPlayer(bullet));
-  ObjMove_SetAcceleration(bullet, 0);
-  ObjMove_SetSpeed(bullet, 10);
-}
-//Finishing task
 task TFinalize
 {
   //Don't do anything until the boss life = 0

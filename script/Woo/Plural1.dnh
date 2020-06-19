@@ -1,0 +1,33 @@
+#TouhouDanmakufu[Plural]
+#ScriptVersion[3]
+#Title["TestFight1"]
+#Text["Nigger"] 
+
+
+@Event
+{
+}
+
+
+@Initialize
+{
+}
+
+
+@MainLoop
+{
+  yield;
+}
+
+task TPlural{
+  let dir = GetCurrentScriptDirectory();
+  let obj = ObjEnemyBossScene_Create();
+  ObjEnemyBossScene_Add(obj, 0, dir ~ "./Nonspell1.dnh");
+  ObjEnemyBossScene_Add(obj, 0, dir ~ "./LaserCircle.dnh");
+
+  while(!Obj_IsDeleted(obj))
+  {
+    yield;
+  }
+  CloseScript(GetOwnScriptID());
+}
