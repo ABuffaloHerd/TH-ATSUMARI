@@ -1,0 +1,18 @@
+function wait(n)
+{
+  // Does what it's called
+  loop(n)
+  {
+    yield;
+  }
+}
+
+function GetCenterX()
+{
+  return GetStgFrameWidth() / 2; // Returns half the width of arena
+}
+
+function GetCenterY()
+{
+  return GetStgFrameHeight() / 2; // Returns half the height of the arena
+}

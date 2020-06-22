@@ -1,13 +1,14 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["base"]
-#Text["base file for nonspells"] 
+#Title["Mash "]
+#Text["A new spellcard appears"] 
 
 #include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
 #include "./lib.dnh"
 
 //Declare some global variables
 let objBoss;
+let objScene = GetEnemyBossSceneObjectID();
 let count = 0;
 
 @Event
@@ -15,7 +16,7 @@ let count = 0;
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(2000);
+    SetScriptResult(5000);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -35,7 +36,7 @@ let count = 0;
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
-
+  ObjEnemyBossScene_StartSpell(objScene);
   DrawLoop;
   TFinalize;
 }
@@ -47,7 +48,44 @@ let count = 0;
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+
+  if(count > 60)
+  {
+    Shoot1;
+  }
+
+  if(count > 60 && ObjEnemy_GetInfo(objBoss, INFO_LIFE) < 1500 && count % 120 == 0)
+  {
+    makeItMorePainful;
+  }
+
+  count++;
   yield;
+}
+
+task Shoot1
+{
+  loop(2)
+  {
+    let angle = 0;
+    let offset = 0;
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), rand(1, 4), rand(0, 360), DS_FIRE_RED, 20);
+  }
+}
+
+task makeItMorePainful
+{
+  let angle = rand(0, 360);
+  loop(20)
+  {
+    ascent (i in 1..10)
+    {
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, angle, DS_BALL_M_SKY, 2);
+    }
+
+    angle += 360/20;
+  }
 }
 
 task DrawLoop
@@ -64,6 +102,12 @@ task TFinalize
   while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
   {
     yield;
+  }
+
+  //Add spellcard bonuses
+  if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT) + ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0)
+  {
+    AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
   }
 
   Obj_Delete(objBoss); //Delete boss
