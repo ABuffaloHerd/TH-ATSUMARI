@@ -107,7 +107,7 @@ task ShootRing
 
   loop(20)
   {
-    let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, DS_BALL_S_ORANGE, 2);
+    let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, DS_SCALE_A_ORANGE, 2);
     angleT += 360/20;
     BulletMovement(object);
   }
@@ -117,8 +117,8 @@ task ShootRing
 
 task ExtraSpam
 {
-  let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.5, 0, DS_BALL_M_BLUE, 4);
-  let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.5, 0, DS_BALL_M_BLUE, 4);
+  let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.3, 0, DS_BALL_M_ORANGE, 4);
+  let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.3, 0, DS_BALL_M_ORANGE, 4);
   ExtraSpamCommands(obj1);
   ExtraSpamCommands(obj2);
 }
@@ -133,7 +133,7 @@ task ExtraSpamCommands(object)
   let angle = rand(0, 6);
   loop(30)
   {
-    CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 3, angle, DS_NEEDLE_SKY, 40);
+    CreateShotA2(ObjMove_GetX(object), ObjMove_GetY(object), 4, angle, -0.3, -6, DS_NEEDLE_SKY, 40);
     angle += 360/30;
   }
   
@@ -149,8 +149,17 @@ task BulletMovement(bullet)
     yield;
   }
 
-  ObjMove_SetAngle(bullet, GetAngleToPlayer(bullet) + rand(-1, 1));
+  ObjMove_SetAngle(bullet, GetAngleToPlayer(bullet));
+  wait(10);
+  ObjMove_SetSpeed(bullet, 7);
+
+  while(ObjMove_GetSpeed(bullet) > 0) 
+  {
+    yield;
+  }
+
   ObjMove_SetAcceleration(bullet, 0);
+  wait(10);
   ObjMove_SetSpeed(bullet, 10);
 }
 //Finishing task

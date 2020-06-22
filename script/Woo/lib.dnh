@@ -16,3 +16,8 @@ function GetCenterY()
 {
   return GetStgFrameHeight() / 2; // Returns half the height of the arena
 }
+
+function randInt(x, y)
+{
+  return round(rand(x, y));
+}
