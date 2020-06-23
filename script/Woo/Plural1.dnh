@@ -1,7 +1,7 @@
 #TouhouDanmakufu[Plural]
 #ScriptVersion[3]
 #Title["TestFight1"]
-#Text["Nigger"] 
+#Text["Sample bossfight"] 
 
 
 @Event
@@ -25,6 +25,7 @@ task TPlural{
   let obj = ObjEnemyBossScene_Create();
   ObjEnemyBossScene_Add(obj, 0, dir ~ "./Nonspell1.dnh");
   ObjEnemyBossScene_Add(obj, 0, dir ~ "./LaserCircle.dnh");
+  ObjEnemyBossScene_Add(obj, 1, dir ~ "./Nonspell2.dnh");
   ObjEnemyBossScene_Add(obj, 1, dir ~ "./Mash.dnh");
 
   ObjEnemyBossScene_Regist(obj);
