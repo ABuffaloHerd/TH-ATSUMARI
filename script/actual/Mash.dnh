@@ -1,0 +1,118 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Mash "]
+#Text["A new spellcard appears"] 
+
+#include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
+#include "./lib.dnh"
+
+//Declare some global variables
+let objBoss;
+let objScene = GetEnemyBossSceneObjectID();
+let count = 0;
+
+@Event
+{
+  alternative(GetEventType())
+  case(EV_REQUEST_LIFE)
+  {
+    SetScriptResult(5000);
+  }
+  case(EV_REQUEST_TIMER)
+  {
+    SetScriptResult(99);
+  }
+  case(EV_REQUEST_SPELL_SCORE)
+  {
+    SetScriptResult(1000000);
+  }
+}
+
+
+@Initialize 
+{
+  objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+  ObjEnemy_Regist(objBoss);
+
+  //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+  ObjEnemyBossScene_StartSpell(objScene);
+  DrawLoop;
+  TFinalize;
+}
+
+@MainLoop 
+{
+  //Boss hitbox move to boss center
+  ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32);
+
+  //Player hitbox 
+  ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+
+  if(count > 60)
+  {
+    Shoot1;
+  }
+
+  if(count > 60 && ObjEnemy_GetInfo(objBoss, INFO_LIFE) < 1500 && count % 120 == 0)
+  {
+    makeItMorePainful;
+  }
+
+  count++;
+  yield;
+}
+
+task Shoot1
+{
+  loop(2)
+  {
+    let angle = 0;
+    let offset = 0;
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), rand(1, 4), rand(0, 360), DS_FIRE_RED, 20);
+  }
+}
+
+task makeItMorePainful
+{
+  let angle = rand(0, 360);
+  loop(20)
+  {
+    ascent (i in 1..10)
+    {
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, angle, DS_BALL_M_SKY, 2);
+    }
+
+    angle += 360/20;
+  }
+}
+
+task DrawLoop
+{
+  let image = GetCurrentScriptDirectory() ~ "./sprite/th16.png"; // Set okina
+  ObjPrim_SetTexture(objBoss, image); // Set objBoss texture to imgRumia
+  ObjSprite2D_SetSourceRect(objBoss, 10, 2304, 103, 2407); // Spritesheet coords for one texture
+  ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
+}
+
+task TFinalize
+{
+  //Don't do anything until the boss life = 0
+  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
+  {
+    yield;
+  }
+
+  //Add spellcard bonuses
+  if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT) + ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0)
+  {
+    AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+  }
+
+  Obj_Delete(objBoss); //Delete boss
+  DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE); // Immediately delete all shots
+  SetAutoDeleteObject(true); // Auto delete objects
+  CloseScript(GetOwnScriptID()); // Close the script
+  return; //Fuck off
+}

@@ -1,0 +1,204 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Solar Sign \"Sundial Flare\""]
+#Text["Spell 1"] 
+
+#include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
+
+//Declare some global variables
+let objBoss;
+let objScene = GetEnemyBossSceneObjectID();
+let count = 0;
+
+@Event
+{
+  alternative(GetEventType())
+  case(EV_REQUEST_LIFE)
+  {
+    SetScriptResult(4500);
+  }
+  case(EV_REQUEST_TIMER)
+  {
+    SetScriptResult(60);
+  }
+  case(EV_REQUEST_SPELL_SCORE)
+  {
+    SetScriptResult(1000000);
+  }
+}
+
+@Initialize
+{
+  objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+  ObjEnemy_Regist(objBoss);
+
+  //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+
+  ObjEnemyBossScene_StartSpell(objScene); // Begin spellcard  
+
+  DrawLoop;
+  TFinalize;
+}
+
+@MainLoop 
+{
+  //Boss hitbox move to boss center
+  ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32);
+
+  //Player hitbox 
+  ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+  if(count > 30 && count % 70 == 0)
+  {
+    ShootRing;
+  }
+
+  if(count > 60 && count % 90 == 0)
+  {
+    Laser;
+  }
+
+  if(count > 120 && count % 99 == 0)
+  {
+    ExtraSpam;
+  }
+
+  if(count > 200 && count % 169 == 0)
+  {
+    randomMovement;
+  }
+
+  count++;
+  yield;
+}
+
+//Draws rumia
+task DrawLoop
+{
+  let image = GetCurrentScriptDirectory() ~ "./sprite/th16.png"; // Set okina
+  ObjPrim_SetTexture(objBoss, image); // Set objBoss texture to imgRumia
+  ObjSprite2D_SetSourceRect(objBoss, 10, 2304, 103, 2407); // Spritesheet coords for one texture
+  ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
+}
+
+task randomMovement
+{
+  ObjMove_SetDestAtWeight(objBoss, rand(100, GetStgFrameWidth() - 100), rand(40, GetCenterY() - 40), 20, 4);
+}
+
+task Laser
+{
+  let angle = 0;
+
+  loop(20)
+  {
+    angle += rand(0, 3);
+    CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angle, 512, 20, 20, DS_BEAM_YELLOW, 30);
+    angle += 360/20;
+    wait(10);
+  }
+
+}
+
+task ShootRing
+{
+  let angleT = GetAngleToPlayer(objBoss);
+
+  loop(20)
+  {
+    let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, DS_SCALE_A_ORANGE, 2);
+    angleT += 360/20;
+    BulletMovement(object);
+  }
+
+}
+
+
+task ExtraSpam
+{
+  let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.3, 0, DS_BALL_M_ORANGE, 4);
+  let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.3, 0, DS_BALL_M_ORANGE, 4);
+  ExtraSpamCommands(obj1);
+  ExtraSpamCommands(obj2);
+}
+
+task ExtraSpamCommands(object)
+{
+  while(ObjMove_GetSpeed(object) > 0)
+  {
+    yield;
+  }
+
+  let angle = rand(0, 6);
+  loop(30)
+  {
+    CreateShotA2(ObjMove_GetX(object), ObjMove_GetY(object), 4, angle, -0.3, -6, DS_NEEDLE_SKY, 40);
+    angle += 360/30;
+  }
+  
+  Obj_Delete(object);
+}
+
+task BulletMovement(bullet)
+{
+  ObjMove_SetAcceleration(bullet, -0.2);
+
+  while(ObjMove_GetSpeed(bullet) > 0) 
+  {
+    yield;
+  }
+
+  ObjMove_SetAngle(bullet, GetAngleToPlayer(bullet));
+  wait(10);
+  ObjMove_SetSpeed(bullet, 7);
+
+  while(ObjMove_GetSpeed(bullet) > 0) 
+  {
+    yield;
+  }
+
+  ObjMove_SetAcceleration(bullet, 0);
+  wait(10);
+  ObjMove_SetSpeed(bullet, 10);
+}
+//Finishing task
+task TFinalize
+{
+  //Don't do anything until the boss life = 0
+  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
+  {
+    yield;
+  }
+
+  //Add spellcard bonuses
+  if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT) + ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0)
+  {
+    AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+  }
+
+  Obj_Delete(objBoss); //Delete boss
+  DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE); // Immediately delete all shots
+  SetAutoDeleteObject(true); // Auto delete objects
+  CloseScript(GetOwnScriptID()); // Close the script
+  return; //Fuck off
+}
+
+function wait(n)
+{
+  // Does what it's called
+  loop(n)
+  {
+    yield;
+  }
+}
+
+function GetCenterX()
+{
+  return GetStgFrameWidth() / 2; // Returns half the width of arena
+}
+
+function GetCenterY()
+{
+  return GetStgFrameHeight() / 2; // Returns half the height of the arena
+}
