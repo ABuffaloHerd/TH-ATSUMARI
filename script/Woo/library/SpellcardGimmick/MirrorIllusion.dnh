@@ -1,0 +1,184 @@
+/**
+  *
+  * Authored by RZFury.
+  *
+  * Danmakufu Code - Last Modified at March 07, 2019
+  * Add documentations at May 28, 2020
+  *
+  * Scrapped from my abandoned project years ago.
+  * You can freely use and improve or even modify the script.
+  * 
+  * Sidenote:
+  *   The documentation may not detailed enough or slightly confusing. I apologize for the inconvenience.
+  *   I don't really remember most of the code's purpose or what they're really doing.
+  *   I will mark the following code blocks with: // ===== THE IDK CODE BLOCK - START/END ===== //
+  *
+  * Legends:
+  *  - RP : Render Priority
+  *
+  */
+
+/**
+  * Name          : Mirror Illusion (may not be a better name)
+  * Purpose       : Will split the visual to 16 pieces and then flip some of the piece. Just to make bullet dodging more confusing.
+  * General Idea  : I want to make an enhanced version of Seija's Ability (on DDC, she's flipping and rotating the STG Frame)
+  *
+  * How it supposed to be worked:
+  *   Intended Flow (Opening Animation State -> Main State -> Closing Animation State)
+  *   1. First, it enter the Opening Animation State (the visual is splitted by 16 cels, 4 rows x 4 column, then rotated to
+  *      create a transition to the Main State).
+  *   2. Main State supposed to be static, as long as the specified time.
+  *   3. Then, it enter the Closing Animation State (just the reverse of Opening Animation State)
+  *
+  * Basic Usage : Just call the function when a spell card starts or whenever you like and set the time above `120`.
+  * Example     :
+  * ```
+  *  MirrorIllusion(360); // For 240 Frames of the Main State.
+  *
+  * ``` 
+  *
+  * Param:
+  *   1. (int) time: Frame based. Basically how long the gimmick will last.
+  *       - !!! GIVEN VALUE MUST BE MORE THAN `120` FRAMES. Unless if the code is modified and the modified code referencing this params !!!
+  *       - Recommended Value is `180` frames for 1 seconds gap.
+  *         `time` parameter uses the first and last 60 frames for animating the opening and closing animation.
+  *
+  * Issue:
+  *   1. Transition between spell cards while this function is active is not tested, might become a major bugs.
+  *   2. Hard Coded to use anything inside RP Range 20 to 78, RP 79 is reserved for the camera object [1], unless modified.
+  *
+  */
+task MirrorIllusion(time){
+
+  // Object container for all Camera Objects [1]. 
+  let obj = [];
+
+  // Get the stg frame's dimensions
+  let frameL = GetStgFrameLeft();
+  let frameT = GetStgFrameTop();
+  let frameR = GetStgFrameLeft() + GetStgFrameWidth();
+  let frameB = GetStgFrameTop() + GetStgFrameHeight();
+  let frameW = GetStgFrameWidth();
+  let frameH = GetStgFrameHeight();
+
+  // Disable the stg frame's render when the animation starts.
+  SetInvalidRenderPriorityA1(20, 78);
+
+  // The Render Target of the STG Frame's RP Range, specified by the `RenderToTextureA1` function below [3].
+  // A Camera Object will take a slice from this texture and render it.
+  // [2]
+  let rtx = GetReservedRenderTargetName(0); 
+
+  // The Camera Object's initial width and height.
+  let obj_w = frameW/8;
+  let obj_h = frameH/8;
+
+  // ===== THE IDK CODE BLOCK - START ===== //
+  // This code block is basically instantiating the camera object and then do the opening animation.
+  ascent(i in 0..4){
+    let r = i%2;
+    ascent(j in 0..4){
+      let ay = 0;
+      let xOffset = 0;
+      let camObj = _Camera(obj_w + ((j*2)*obj_w), obj_h + ((i*2)*obj_h), frameW/4, frameH/4, frameL + ((j*2)*obj_w), frameT + ((i*2)*obj_h), frameR - (frameW*3/4) + ((j*2)*obj_w), frameB - (frameH*3/4) + ((i*2)*obj_h), ay);
+      obj = obj ~ [camObj];
+      if(j%2 == r){
+        rotate1(camObj, 60, 180, -1);
+      }
+      else{
+        rotate1(camObj, 60, 360, 0);
+      }
+    }
+  }
+  // ===== THE IDK CODE BLOCK - END ===== //
+
+  // Start looping the animation based on the `time` parameter.
+  let frame = 0;
+  loop(time){
+    frame++;
+    // Render the STG Frame to The Render Target above [2]
+    // [3]
+    RenderToTextureA1(rtx, 20, 78, true); 
+
+    // ===== THE IDK CODE BLOCK - START ===== //
+    // I'm not sure, but this code block will animate the Camera Object's closing animation.
+    if(frame == time-60){
+      ascent(i in 0..4){
+        let r = i%2;
+        ascent(j in 0..4){
+          let idx = (i*4) + j;
+          if(j%2 == r){
+            rotate2(obj[idx], 60, 180, 1);
+          }
+          else{
+            rotate2(obj[idx], 60, 360, 0);
+          }
+        }
+      }
+    }
+    // ===== THE IDK CODE BLOCK - END ===== //
+
+    yield;
+  }
+
+  // Delete all the Camera Object when the whole animation is finished.
+  // and Clear the Invalid RP Range.
+  ascent(i in 0..16){
+    Obj_Delete(obj[i]);
+  }
+  ClearInvalidRenderPriority();
+
+  // Instantiate a Camera Object.
+  // [1] The Camera Object = A Camera Object is an object that render the parts of the specified STG Frame's RP Range
+  // Params (All params required): 
+  // - x, y       : Camera Position
+  // - w, h       : Camera Width and Height
+  // - l, t, r, b : Texture DImensions (Left, Top, Right, and Bottom) from The Render Target.
+  // - ay         : Initial Y Axis Rotation, Just put `0` on it.
+  function _Camera(x, y, w, h, l, t, r, b, ay){
+    let obj = ObjPrim_Create(OBJ_SPRITE_2D);
+    ObjPrim_SetTexture(obj, rtx);
+    ObjSprite2D_SetSourceRect(obj, l, t, r, b);
+    ObjSprite2D_SetDestRect(obj, -w/2, -h/2, w/2, h/2);
+    Obj_SetRenderPriorityI(obj, 79);
+    ObjRender_SetPosition(obj, x, y, 0);
+    ObjRender_SetAngleY(obj, ay);
+    return obj;
+  }
+
+  // Rotation Animation (from the opening animation to Main State).
+  // Params (All params required):
+  // - obj       : Camera Object [1]
+  // - time      : How long the animation running. (Not the same with parent's `time` param)
+  // - max_angle : Maximal angle when the animation is finished.
+  // - xOffset   : Offset the X Position of the Camera Object.
+  //               Set if there's clipping on the left or right side of the camera object.
+  //               Otherwise just put `0`.
+  task rotate1(obj, time, max_angle, xOffset){
+    let angle = ObjRender_GetAngleY(obj);
+    ObjRender_SetX(obj, ObjRender_GetX(obj) + xOffset);
+    while(angle < max_angle){
+      angle += max_angle/time;
+      ObjRender_SetAngleY(obj, angle);
+      yield;
+    }
+  }
+
+  // Rotation Animation (from Main State) to the closing animation.
+  // Params (All params required):
+  // - obj       : Camera Object [1]
+  // - time      : How long the animation running. (Not the same with parent's `time` param)
+  // - max_angle : Maximal angle when the animation is finished.
+  // - xOffset   : Offset the X Position of the Camera Object.
+  //               Put a negative number of the previously set `xOffset` on `rotate1`.
+  //               Otherwise just put `0`.
+  task rotate2(obj, time, min_angle, xOffset){
+    let angle = ObjRender_GetAngleY(obj);
+    ObjRender_SetX(obj, ObjRender_GetX(obj) + xOffset);
+    while(angle > angle - min_angle){
+      angle -= min_angle/time;
+      ObjRender_SetAngleY(obj, angle);
+      yield;
+    }
+  }
+}

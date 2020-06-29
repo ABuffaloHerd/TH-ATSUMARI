@@ -1,0 +1,28 @@
+let EV_RANGE_START = 28513;
+let EV_SPRITES = EV_USER + EV_RANGE_START + 0;
+let EV_EXPLOSION = EV_USER + EV_RANGE_START + 1;
+let EV_RELEASE = EV_USER + EV_RANGE_START + 2;
+let EV_CHARGE = EV_USER + EV_RANGE_START + 3;
+
+function BFX_Init() {
+	StartScript(LoadScript(GetCurrentScriptDirectory() ~ "BFX_Tasks.dnh"));
+}
+
+function BFX_SetGraphics(expparticle,ring,lightbeams) {
+	NotifyEvent(GetAreaCommonData("BFX","BFX_Script",-1), EV_SPRITES, [expparticle,ring,lightbeams]);
+}
+
+
+//Effects
+
+function BFX_Explosion(x,y,radius,time) {
+	NotifyEvent(GetAreaCommonData("BFX","BFX_Script",-1), EV_EXPLOSION, [x,y,radius,time]);
+}
+
+function BFX_Release(x,y,radius,time) {
+	NotifyEvent(GetAreaCommonData("BFX","BFX_Script",-1), EV_RELEASE, [x,y,radius,time]);
+}
+
+function BFX_Charge(x,y,radius,time) {
+	NotifyEvent(GetAreaCommonData("BFX","BFX_Script",-1), EV_CHARGE, [x,y,radius,time]);
+}

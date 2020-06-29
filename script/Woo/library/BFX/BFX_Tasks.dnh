@@ -1,0 +1,299 @@
+let EV_RANGE_START = 28513;
+let EV_SPRITES = EV_USER + EV_RANGE_START + 0;
+let EV_EXPLOSION = EV_USER + EV_RANGE_START + 1;
+let EV_RELEASE = EV_USER + EV_RANGE_START + 2;
+let EV_CHARGE = EV_USER + EV_RANGE_START + 3;
+
+let sprExpPart = GetCurrentScriptDirectory() ~ "ExpParticle.png";
+let sprRing = GetCurrentScriptDirectory() ~ "Ring.png";
+let sprBeams = GetCurrentScriptDirectory() ~ "Beams.png";
+
+@Initialize
+{
+	loadImages();
+	if (!IsCommonDataAreaExists("BFX")) {
+		CreateCommonDataArea("BFX");
+	}
+	if (GetAreaCommonData("BFX","BFX_Script",-1) != -1) {
+		CloseScript(GetAreaCommonData("BFX","BFX_Script",-1));
+	}
+	SetAreaCommonData("BFX","BFX_Script", GetOwnScriptID());
+}
+
+@Event {
+	alternative(GetEventType)
+	case(EV_SPRITES) {
+		let args = GetEventArgument(0);
+		if (args[0] != "") {
+			sprExpPart = args[0];
+		}
+		if (args[1] != "") {
+			sprRing = args[1];
+		}
+		if (args[2] != "") {
+			sprBeams = args[2];
+		}
+		loadImages();
+	}
+	case(EV_EXPLOSION) {
+		let args = GetEventArgument(0);
+		BFX_Explosion(args[0],args[1],args[2],args[3],sprExpPart,sprRing);
+	}
+	case(EV_RELEASE) {
+		let args = GetEventArgument(0);
+		BFX_Release(args[0],args[1],args[2],args[3],sprExpPart,sprBeams);
+	}
+	case(EV_CHARGE) {
+		let args = GetEventArgument(0);
+		BFX_Charge(args[0],args[1],args[2],args[3],sprExpPart,sprBeams);
+	}
+}
+
+@MainLoop
+{
+	yield;
+}
+
+
+function loadImages() {
+	LoadTexture(sprExpPart);
+	LoadTexture(sprRing);
+	LoadTexture(sprBeams);
+}
+
+
+task BFX_Explosion(x,y,radius,time,particlespritepath,ringspritepath) {
+	let ringalarm = 0;
+	loop (time) {
+		_BFX_ParticleA1(x,y,particlespritepath,rand(radius / 160,radius / 80),rand(0,360),rand(0,360),255,1,255 / 80,rand(0.022,0.024),BLEND_ADD_ARGB,rand(-3,3));
+		if (ringalarm == 0) {
+			BFX_Shockwave(x,y,ringspritepath,rand(0,360),255,0.1,0.04,radius * 1.5,40,BLEND_ADD_ARGB,0,rand(0,360),255);
+			ringalarm = 4;
+		}
+		ringalarm -= 1;
+		yield;
+	}
+}
+
+task BFX_Release(x,y,radius,time,particlespritepath,beamspritepath) {
+	let count = time;
+	let angle;
+	let speed = 4;
+	_BFX_FocusBeam(x,y,radius,beamspritepath,rand(0,360),-1,time / 4,time / 2);
+	_BFX_FocusBeam(x,y,radius,beamspritepath,rand(0,360),1,time / 4,time / 2);
+	loop (count) {
+		_BFX_ParticleA1(x,y,particlespritepath,rand(0,radius / 20),rand(0,360),rand(0,360),255,0.25,255 / 20,rand(0.1,0.12),BLEND_ADD_ARGB,rand(-3,3));
+		yield;
+	}
+}
+
+task BFX_Charge(x,y,radius,time,particlespritepath,beamspritepath) {
+	let count = time;
+	let angle;
+	let speed = 4;
+	_BFX_FocusBeam(x,y,radius,beamspritepath,rand(0,360),-1,time / 4,time / 2);
+	_BFX_FocusBeam(x,y,radius,beamspritepath,rand(0,360),1,time / 4,time / 2);
+	loop (count) {
+		angle = rand(0,360);
+		_BFX_FocusPart(x + cos(angle) * radius,y + sin(angle) * radius,particlespritepath,x,y,speed,rand(0,360),2,rand(-2,2),radius);
+		yield;
+	}
+}
+
+
+
+task BFX_Shockwave(x,y,spritepath,angle,alpha,xscale,yscale,radius,time,blending,angvel,hue,saturation) {
+	let sprite = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(sprite,spritepath);
+	let width = GetTextureWidth(spritepath);
+	let height = GetTextureHeight(spritepath);
+	ObjSprite2D_SetSourceRect(sprite,0,0,width,height);
+	ObjSprite2D_SetDestCenter(sprite);
+	ObjRender_SetBlendType(sprite,blending);
+	ObjRender_SetColorHSV(sprite,hue,saturation,255);
+	ObjRender_SetX(sprite,x);
+	ObjRender_SetY(sprite,y);
+	let alp = alpha;
+	let xscl = xscale;
+	let yscl = yscale;
+	let largest = max(xscale,yscale);
+	let maxscale = (radius * 2) / max(width,height);
+	let sspd = (maxscale - max(xscl,yscl)) / time;
+	let xsclspd = sspd * (xscl / largest);
+	let ysclspd = sspd * (yscl / largest);
+	let ang = angle;
+	while (alp > 0) {
+		ObjRender_SetAlpha(sprite,alp);
+		ObjRender_SetScaleXYZ(sprite, xscl, yscl, 1);
+		ObjRender_SetAngleZ(sprite,ang);
+		alp = (1 - max(xscl,yscl) / maxscale) * alpha;
+		xscl += xsclspd;
+		yscl += ysclspd;
+		ang += angvel;
+		yield;
+	}
+	Obj_Delete(sprite);
+}
+
+
+
+
+//Particles
+
+task _BFX_ParticleA1(x,y,spritepath,speed,direction,angle,alpha,scale,fadespeed,scalespeed,blending,angvel) {
+	let sprite = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(sprite,spritepath);
+	let width = GetTextureWidth(spritepath);
+	let height = GetTextureHeight(spritepath);
+	ObjSprite2D_SetSourceRect(sprite,0,0,width,height);
+	ObjSprite2D_SetDestCenter(sprite);
+	ObjRender_SetBlendType(sprite,blending);
+	let px = x;
+	let py = y;
+	let dir = direction;
+	let spd = speed;
+	let fspd = fadespeed;
+	let sspd = scalespeed;
+	let alp = alpha;
+	let scl = scale;
+	let ang = angle;
+	while (alp > 0) {
+		ObjRender_SetX(sprite,px);
+		ObjRender_SetY(sprite,py);
+		ObjRender_SetAlpha(sprite,alp);
+		ObjRender_SetScaleXYZ(sprite, scl, scl, 1);
+		ObjRender_SetAngleZ(sprite,ang);
+		px += cos(dir) * spd;
+		py += sin(dir) * spd;
+		alp -= fspd;
+		scl += sspd;
+		ang += angvel;
+		yield;
+	}
+	Obj_Delete(sprite);
+}
+
+task _BFX_ParticleA2(x,y,spritepath,speed,direction,angle,alpha,scale,fadespeed,scalespeed,blending,angvel,hue,saturation) {
+	let sprite = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(sprite,spritepath);
+	let width = GetTextureWidth(spritepath);
+	let height = GetTextureHeight(spritepath);
+	ObjSprite2D_SetSourceRect(sprite,0,0,width,height);
+	ObjSprite2D_SetDestCenter(sprite);
+	ObjRender_SetBlendType(sprite,blending);
+	ObjRender_SetColorHSV(sprite,hue,saturation,255);
+	let px = x;
+	let py = y;
+	let dir = direction;
+	let spd = speed;
+	let fspd = fadespeed;
+	let sspd = scalespeed;
+	let alp = alpha;
+	let scl = scale;
+	let ang = angle;
+	while (alp > 0) {
+		ObjRender_SetX(sprite,px);
+		ObjRender_SetY(sprite,py);
+		ObjRender_SetAlpha(sprite,alp);
+		ObjRender_SetScaleXYZ(sprite, scl, scl, 1);
+		ObjRender_SetAngleZ(sprite,ang);
+		px += cos(dir) * spd;
+		py += sin(dir) * spd;
+		alp -= fspd;
+		scl += sspd;
+		ang += angvel;
+		yield;
+	}
+	Obj_Delete(sprite);
+}
+
+task _BFX_FocusPart(x,y,spritepath,tox,toy,speed,angle,scale,angvel,radius) {
+	let sprite = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(sprite,spritepath);
+	let width = GetTextureWidth(spritepath);
+	let height = GetTextureHeight(spritepath);
+	ObjSprite2D_SetSourceRect(sprite,0,0,width,height);
+	ObjSprite2D_SetDestCenter(sprite);
+	ObjRender_SetBlendType(sprite,BLEND_ADD_ARGB);
+	let fadein = 8;
+	let px = x;
+	let py = y;
+	let alp = 0;
+	let scl = scale;
+	let ang = angle;
+	let dir;
+	let dist;
+	loop (fadein) {
+		ObjRender_SetX(sprite,px);
+		ObjRender_SetY(sprite,py);
+		ObjRender_SetAlpha(sprite,alp);
+		ObjRender_SetScaleXYZ(sprite, scl, scl, 1);
+		ObjRender_SetAngleZ(sprite,ang);
+		dir = atan2(toy - py,tox - px);
+		dist = ((px - tox) ^ 2 + (py - toy) ^ 2) ^ 0.5;
+		px += cos(dir) * min(speed,dist);
+		py += sin(dir) * min(speed,dist);
+		alp += 255 / fadein;
+		scl = scale * ((dist / radius) ^ 0.6);
+		ang += angvel;
+		yield;
+	}
+	let radius2 = dist;
+	alp = 255;
+	while (alp > 0) {
+		ObjRender_SetX(sprite,px);
+		ObjRender_SetY(sprite,py);
+		ObjRender_SetAlpha(sprite,alp);
+		ObjRender_SetScaleXYZ(sprite, scl, scl, 1);
+		ObjRender_SetAngleZ(sprite,ang);
+		dir = atan2(toy - py,tox - px);
+		dist = ((px - tox) ^ 2 + (py - toy) ^ 2) ^ 0.5;
+		px += cos(dir) * min(speed,dist);
+		py += sin(dir) * min(speed,dist);
+		if (dist < speed) {
+			alp = 0;
+		}
+		alp = (((dist) / radius2) ^ 0.7) * 255;
+		scl = scale * ((dist / radius) ^ 0.6);
+		ang += angvel;
+		yield;
+	}
+	Obj_Delete(sprite);
+}
+
+task _BFX_FocusBeam(x,y,radius,spritepath,angle,angvel,fadetime,lifetime) {
+	let sprite = ObjPrim_Create(OBJ_SPRITE_2D);
+	ObjPrim_SetTexture(sprite,spritepath);
+	let width = GetTextureWidth(spritepath);
+	let height = GetTextureHeight(spritepath);
+	ObjSprite2D_SetSourceRect(sprite,0,0,width,height);
+	ObjSprite2D_SetDestCenter(sprite);
+	ObjRender_SetScaleXYZ(sprite,(radius * 2) / width,(radius * 2) / height,1);
+	ObjRender_SetBlendType(sprite,BLEND_ADD_ARGB);
+	ObjRender_SetPosition(sprite,x,y,0);
+	Obj_SetRenderPriorityI(sprite,39);
+	let alpha = 0;
+	let ang = angle;
+	let adelta = 255 / fadetime;
+	loop (fadetime) {
+		ObjRender_SetAlpha(sprite,alpha);
+		ObjRender_SetAngleZ(sprite,ang);
+		alpha += adelta;
+		ang += angvel;
+		yield;
+	}
+	alpha = 255;
+	loop (lifetime) {
+		ObjRender_SetAngleZ(sprite,ang);
+		ang += angvel;
+		yield;
+	}
+	loop (fadetime) {
+		ObjRender_SetAlpha(sprite,alpha);
+		ObjRender_SetAngleZ(sprite,ang);
+		ang += angvel;
+		alpha -= adelta;
+		yield;
+	}
+	Obj_Delete(sprite);
+}
