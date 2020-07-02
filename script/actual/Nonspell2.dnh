@@ -59,10 +59,10 @@ let count = 0;
 
 task Shoot1
 {
-  ascent (i in 1..4)
+  ascent (i in 1..6)
   {
-    let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 3, 20, -0.2, 0, DS_RICE_M_PURPLE, 4);
-    let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 3, 160, -0.2, 0, DS_RICE_M_PURPLE, 4);
+    let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, 20, -0.2, 0, DS_RICE_M_RED, 4);
+    let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, 160, -0.2, 0, DS_RICE_M_RED, 4);
     bulletMove(obj1);
     bulletMove(obj2);
   }
@@ -85,13 +85,13 @@ task bulletMove(object)
   ObjMove_SetAngle(object, rand(75, 105));
   ObjMove_SetAcceleration(object, 0);
   ObjMove_SetSpeed(object, 8);
-  wait(rand(20, 30));
+  wait(rand(10, 20));
 
   let angleTheta = rand(0, 360);
   loop(10)
   {
     CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), rand(1, 3), angleTheta, bullets[randInt(0, 3)], 10);
-    angleTheta += 36;
+    angleTheta += 360 / 10;
   }
 
   Obj_Delete(object);

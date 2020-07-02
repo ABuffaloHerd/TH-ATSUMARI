@@ -81,7 +81,7 @@ task makeItMorePainful
   {
     ascent (i in 1..10)
     {
-      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, angle, DS_BALL_M_SKY, 2);
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, angle, DS_BALL_M_ORANGE, 2);
     }
 
     angle += 360/20;

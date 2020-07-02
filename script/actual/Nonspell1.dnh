@@ -48,7 +48,7 @@ let count = 0;
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
 
 
-  if(count > 60 && count % 6 == 0)
+  if(count > 60 && count % 90 == 0)
   {
     shootfive;
   }
@@ -64,10 +64,14 @@ let count = 0;
 task shootfive
 {
   let angle = GetAngleToPlayer(objBoss);
-  loop(25)
+  loop(15)
   {
-    CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 30, angle, -2, 5, DS_BALL_SS_WHITE, 20);
-    angle += 360/25;
+    loop(25)
+    {
+      CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 30, angle, -2, 5, DS_BALL_M_WHITE, 20);
+      angle += 360/25;
+    }
+    wait(5);
   }
 }
 
