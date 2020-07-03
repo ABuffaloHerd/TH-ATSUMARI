@@ -67,17 +67,17 @@ let count = 0;
 task circleShot
 {
   let angle = rand(0, 360);
-  loop(50)
+  loop(30)
   {
     let angle2 = angle;
     loop(8)
     {
-      let obj = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angle2, -0.2, 0, BL_SMALL_PURPLE, 2);
+      let obj = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angle2, -0.1, 0, BL_SMALL_PURPLE, 2);
       bulletChange(obj);
       angle2 += 360/8;
     }
     wait(1);
-    angle += 360 / 50;
+    angle += 360 / 30;
   }
 
   wait(70);
@@ -88,11 +88,16 @@ task extraSpam
 {
   let angle = GetAngleToPlayer(objBoss);
 
+  if(Obj_IsDeleted(objBoss))
+  {
+    return;
+  }
+
   loop(50)
   {
     ascent (i in 1..5)
     {
-      let obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2 * i, angle, SMALL_MAGENTA, 1);
+      let obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 1 * i, angle, SMALL_PURPLE, 1);
       if(i % 2 == 0)
       {
         ObjMove_SetAngularVelocity(obj, 0.5);
@@ -107,23 +112,6 @@ task extraSpam
   }
 }
 
-// task circleShotNiggative
-// {
-//   let angle = rand(0, 360);
-//   loop(50)
-//   {
-//     let angle2 = angle;
-//     loop(8)
-//     {
-//       let obj = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angle2, -0.2, 0, BL_SMALL_PURPLE, 2);
-//       bulletChange(obj);
-//       angle2 += 360/8;
-//     }
-//     wait(1);
-//     angle -= 360 / 50;
-//   }
-// }
-
 task bulletChange(object)
 {
   while(ObjMove_GetSpeed(object) > 0)
@@ -136,8 +124,8 @@ task bulletChange(object)
   {
     return;
   }
-  CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 2, ObjMove_GetAngle(object), SUPP_YELLOW, 1);
-  CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 1, ObjMove_GetAngle(object) * -1, SUPP_ORANGE, 1);
+  CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 2, ObjMove_GetAngle(object), SUPP_BLUE, 1);
+  CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 1, ObjMove_GetAngle(object) * -1, SUPP_PURPLE, 1);
   Obj_Delete(object);
 }
 task DrawLoop
