@@ -50,7 +50,7 @@ let count = 0;
 
   
 
-  if(count % 100 == 0 && count > 60)
+  if(count % 240 == 0 && count > 60)
   {
     circleShot;
   }
@@ -78,6 +78,32 @@ task circleShot
     }
     wait(1);
     angle += 360 / 50;
+  }
+
+  wait(70);
+  extraSpam;
+}
+
+task extraSpam
+{
+  let angle = GetAngleToPlayer(objBoss);
+
+  loop(50)
+  {
+    ascent (i in 1..5)
+    {
+      let obj = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2 * i, angle, SMALL_MAGENTA, 1);
+      if(i % 2 == 0)
+      {
+        ObjMove_SetAngularVelocity(obj, 0.5);
+      }
+      else
+      {
+        ObjMove_SetAngularVelocity(obj, -0.5);
+      }
+    }
+
+    angle += 360/50;
   }
 }
 
@@ -111,6 +137,7 @@ task bulletChange(object)
     return;
   }
   CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 2, ObjMove_GetAngle(object), SUPP_YELLOW, 1);
+  CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 1, ObjMove_GetAngle(object) * -1, SUPP_ORANGE, 1);
   Obj_Delete(object);
 }
 task DrawLoop
