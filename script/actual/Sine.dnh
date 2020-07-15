@@ -1,20 +1,23 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["Nonspell1"]
-#Text["AAAAAA"] 
+#Title["sine test"]
+#Text["sin cos tan"] 
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
+#include "./lib.dnh"
 
 //Declare some global variables
 let objBoss;
+let objScene = GetEnemyBossSceneObjectID();
 let count = 0;
+let firstShot = false;
 
 @Event
 {
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(2000);
+    SetScriptResult(5000);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -31,6 +34,7 @@ let count = 0;
 {
   objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
   ObjEnemy_Regist(objBoss);
+  ObjEnemyBossScene_StartSpell(objScene);
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
@@ -46,61 +50,49 @@ let count = 0;
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
-
-
-  if(count > 60 && count % 90 == 0)
+  if(count > 100 && not(firstShot))
   {
-    shootfive;
+    bulletWall;
+    firstShot = true;
   }
 
-  if(count > 60 && ObjEnemy_GetInfo(objBoss, INFO_LIFE) < 1000 && count % 80 == 0)
+  if (count > 60 && count % 150 == 0)
   {
-    bigpew;
+    sinShot;
   }
   count++;
   yield;
 }
 
-task shootfive
+task sinShot
 {
-  let angle = GetAngleToPlayer(objBoss);
-  loop(15)
+  let angleT;
+  ascent (i in 1..360) 
   {
-    loop(25)
-    {
-      CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 30, angle, -2, 5, LARGE_RED, 20);
-      angle += 360/25;
-    }
-    wait(5);
+    angleT = sin(i) * 500;
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 6, angleT, KNIFE_BLUE, 1);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 6, angleT * -1, KNIFE_BLUE, 1);
+    wait(3);
   }
 }
 
-task bigpew
+task bulletWall
 {
-  let angle = 0;
-  let obj1 = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 20, 0, LARGE_PURPLE, 2);
-  let obj2 = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 20, 180, LARGE_PURPLE, 2);
-
-  bigPewMovements(obj1);
-  bigPewMovements(obj2);
+  ascent (j in 0..360)
+  {
+    let bullets = CreateShotA1(GetPlayerX() + (100 * cos(j)), GetPlayerY() + (100 * sin(j)), 0, 0, BL_SMALL_RED, 20);
+    bulletWallExpire(bullets);
+  }
 }
 
-task bigPewMovements(object)
+task bulletWallExpire(obj)
 {
-  ObjMove_SetAcceleration(object, -1);
-  while(ObjMove_GetSpeed(object) > 0)
-  {
-    yield;
-  }
-
-  let theta = GetAngleToPlayer(objBoss);
-  loop(15)
-  {
-    CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 5, theta, BL_SMALL_BLUE, 10);
-    theta += 360/15;
-  }
-
-  Obj_Delete(object);
+  wait(80);
+  //CreateLooseLaserA1(ObjMove_GetX(obj), ObjMove_GetY(obj), 10, GetAngleToPlayer(obj) + 180, 300, 16, C_LASER_YELLOW, 1);
+  wait(1);
+  Obj_Delete(obj);
+  wait(20);
+  firstShot = false;
 }
 
 task DrawLoop
@@ -119,28 +111,15 @@ task TFinalize
     yield;
   }
 
+  //Add spellcard bonuses
+  if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT) + ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0)
+  {
+    AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
+  }
+
   Obj_Delete(objBoss); //Delete boss
   DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE); // Immediately delete all shots
   SetAutoDeleteObject(true); // Auto delete objects
   CloseScript(GetOwnScriptID()); // Close the script
   return; //Fuck off
-}
-
-function wait(n)
-{
-  // Does what it's called
-  loop(n)
-  {
-    yield;
-  }
-}
-
-function GetCenterX()
-{
-  return GetStgFrameWidth() / 2; // Returns half the width of arena
-}
-
-function GetCenterY()
-{
-  return GetStgFrameHeight() / 2; // Returns half the height of the arena
 }

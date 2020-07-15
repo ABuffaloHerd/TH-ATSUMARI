@@ -27,6 +27,7 @@ task TPlural{
   ObjEnemyBossScene_Add(obj, 0, dir ~ "./LaserCircle.dnh");
   ObjEnemyBossScene_Add(obj, 1, dir ~ "./Nonspell2.dnh");
   ObjEnemyBossScene_Add(obj, 1, dir ~ "./Mash.dnh");
+  ObjEnemyBossScene_Add(obj, 2, dir ~ "./Nonspell3.dnh");
 
   ObjEnemyBossScene_Regist(obj);
 

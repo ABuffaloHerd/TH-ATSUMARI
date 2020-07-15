@@ -1,9 +1,10 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["Nonspell1"]
-#Text["AAAAAA"] 
+#Title["Nonspell 3"]
+#Text["exactly what it is"] 
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
+#include "./lib.dnh"
 
 //Declare some global variables
 let objBoss;
@@ -14,7 +15,7 @@ let count = 0;
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(2000);
+    SetScriptResult(3400);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -47,66 +48,55 @@ let count = 0;
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
 
-
-  if(count > 60 && count % 90 == 0)
+  if (count > 60 && count % 120 == 0)
   {
-    shootfive;
+    shot;
   }
 
-  if(count > 60 && ObjEnemy_GetInfo(objBoss, INFO_LIFE) < 1000 && count % 80 == 0)
+  if (count > 60 && count % 100 == 0)
   {
-    bigpew;
+    LASERS;
   }
   count++;
   yield;
 }
 
-task shootfive
+task shot
 {
   let angle = GetAngleToPlayer(objBoss);
-  loop(15)
+  let angle2 = angle;
+  loop(30)
   {
-    loop(25)
-    {
-      CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 30, angle, -2, 5, LARGE_RED, 20);
-      angle += 360/25;
-    }
-    wait(5);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 8, angle, HEART_RED, 1);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 8, angle + 90, HEART_RED, 1);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 8, angle + 180, HEART_RED, 1);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 8, angle + 270, HEART_RED, 1);
+
+    //pURPLE HEARTS GO THE OTHER WAY
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 8, angle2, HEART_PURPLE, 1);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 8, angle2 - 90, HEART_PURPLE, 1);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 8, angle2 - 180, HEART_PURPLE, 1);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 8, angle2 - 270, HEART_PURPLE, 1);
+    wait(4);
+    angle += 360/30;
+    angle2 -= 360/30;
   }
 }
 
-task bigpew
+task LASERS
 {
-  let angle = 0;
-  let obj1 = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 20, 0, LARGE_PURPLE, 2);
-  let obj2 = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 20, 180, LARGE_PURPLE, 2);
-
-  bigPewMovements(obj1);
-  bigPewMovements(obj2);
-}
-
-task bigPewMovements(object)
-{
-  ObjMove_SetAcceleration(object, -1);
-  while(ObjMove_GetSpeed(object) > 0)
+  let angleS = rand(0, 360);
+  loop(50)
   {
-    yield;
+    CreateLooseLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 6, angleS, 200, 10, C_LASER_AQUA, 1);
+    angleS += 360/50;
   }
-
-  let theta = GetAngleToPlayer(objBoss);
-  loop(15)
-  {
-    CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 5, theta, BL_SMALL_BLUE, 10);
-    theta += 360/15;
-  }
-
-  Obj_Delete(object);
 }
 
 task DrawLoop
 {
   let image = GetCurrentScriptDirectory() ~ "./sprite/th16.png"; // Set okina
-  ObjPrim_SetTexture(objBoss, image); // Set objBoss texture to imgRumia
+  ObjPrim_SetTexture(objBoss, image); // Set objBoss texture to okina
   ObjSprite2D_SetSourceRect(objBoss, 10, 2304, 103, 2407); // Spritesheet coords for one texture
   ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
 }
@@ -124,23 +114,4 @@ task TFinalize
   SetAutoDeleteObject(true); // Auto delete objects
   CloseScript(GetOwnScriptID()); // Close the script
   return; //Fuck off
-}
-
-function wait(n)
-{
-  // Does what it's called
-  loop(n)
-  {
-    yield;
-  }
-}
-
-function GetCenterX()
-{
-  return GetStgFrameWidth() / 2; // Returns half the width of arena
-}
-
-function GetCenterY()
-{
-  return GetStgFrameHeight() / 2; // Returns half the height of the arena
 }
