@@ -76,6 +76,8 @@ task sinShot
   }
 }
 
+
+//Slap a fuckin ring of bullets around the player. Now they have to suffer limited movment space.
 task bulletWall
 {
   ascent (j in 0..360)
