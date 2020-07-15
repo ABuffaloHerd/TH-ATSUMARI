@@ -83,6 +83,7 @@ task shot
   }
 }
 
+//lasers are cool and good
 task LASERS
 {
   let angleS = rand(0, 360);
