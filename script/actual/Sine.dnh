@@ -82,7 +82,7 @@ task bulletWall
 {
   ascent (j in 0..360)
   {
-    let bullets = CreateShotA1(GetPlayerX() + (100 * cos(j)), GetPlayerY() + (100 * sin(j)), 0, 0, BL_SMALL_RED, 20);
+    let bullets = CreateShotA1(GetPlayerX() + (100 * cos(j)), GetPlayerY() + (100 * sin(j)), 0, 0, SMALL_RED, 20);
     bulletWallExpire(bullets);
   }
 }

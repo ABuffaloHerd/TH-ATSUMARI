@@ -11,12 +11,14 @@
 
 @Initialize
 {
+  LoadSound(GetCurrentScriptDirectory() ~ "./bgm/06_2.mp3");
   TPlural;
 }
 
 
 @MainLoop
 {
+  PlayBGM(GetCurrentScriptDirectory() ~ "./bgm/06_2.mp3", 11.85, 395);
   yield;
 }
 
