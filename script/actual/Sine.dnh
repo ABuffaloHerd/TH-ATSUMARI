@@ -50,10 +50,10 @@ let firstShot = false;
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
-  if(count > 100 && not(firstShot))
+  if(count > 100 && not(firstShot) && count % 100 == 0)
   {
     bulletWall;
-    firstShot = true;
+    //firstShot = true;
   }
 
   if (count > 60 && count % 150 == 0)
@@ -82,8 +82,9 @@ task bulletWall
 {
   ascent (j in 0..360)
   {
-    let bullets = CreateShotA1(GetPlayerX() + (100 * cos(j)), GetPlayerY() + (100 * sin(j)), 0, 0, SMALL_RED, 20);
-    bulletWallExpire(bullets);
+    let bullets = CreateShotA1(GetPlayerX() + (100 * cos(j)), GetPlayerY() + (100 * sin(j)), 0, 0, KNIFE_RED, 20);
+    ObjMove_SetAngle(bullets, GetAngleToPlayer(bullets) + 180);
+    ObjMove_SetSpeed(bullets, 10);
   }
 }
 
