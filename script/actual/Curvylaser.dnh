@@ -60,18 +60,16 @@ let count = 0;
 task lasercurve
 {
   let laser = CreateCurveLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 7, 90, 40, 18, C_LASER_PURPLE, 1);
+  let angleInit = GetAngleToPlayer(objBoss);
   ObjCrLaser_SetTipDecrement(laser, 0); //make the tip of the laser visible
-  ascent (i in 2..10)
+  loop(10)
   {
-    ObjMove_SetAngularVelocity(laser, i);
-    wait(10);
+    ascent (i in 1..10)
+    {
+      ObjMove_SetAngularVelocity(laser, i);
+      wait(10);
+    }
   }
-  while(ObjMove_GetAngle(laser) != GetAngleToPlayer(laser))
-  {
-    yield;
-  }
-
-  ObjMove_SetAngularVelocity(laser, 0);
 }
 
 task DrawLoop
