@@ -1,23 +1,21 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["sine test"]
-#Text["sin cos tan"] 
+#Title["Curvy laser"]
+#Text["Curvy lasers are fun and good to look at."] 
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
 
 //Declare some global variables
 let objBoss;
-let objScene = GetEnemyBossSceneObjectID();
 let count = 0;
-let firstShot = false;
 
 @Event
 {
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(5000);
+    SetScriptResult(2000);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -34,7 +32,6 @@ let firstShot = false;
 {
   objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
   ObjEnemy_Regist(objBoss);
-  ObjEnemyBossScene_StartSpell(objScene);
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
@@ -50,52 +47,31 @@ let firstShot = false;
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
-  if(count > 100 && not(firstShot) && count % 100 == 0)
+
+  if (count % 60 == 0)
   {
-    bulletWall;
-    //firstShot = true;
+    lasercurve;
   }
 
-  if (count > 60 && count % 150 == 0)
-  {
-    sinShot;
-  }
   count++;
   yield;
 }
 
-task sinShot
+task lasercurve
 {
-  let angleT;
-  ascent (i in 0..360) 
+  let laser = CreateCurveLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 7, 90, 40, 18, C_LASER_PURPLE, 1);
+  ObjCrLaser_SetTipDecrement(laser, 0); //make the tip of the laser visible
+  ascent (i in 2..10)
   {
-    angleT = (sin(i) * 500);
-    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 6, angleT, KNIFE_BLUE, 1);
-    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 6, angleT * -1, KNIFE_BLUE, 1);
-    wait(3);
+    ObjMove_SetAngularVelocity(laser, i);
+    wait(10);
   }
-}
-
-
-//Slap a fuckin ring of bullets around the player. Now they have to suffer limited movment space.
-task bulletWall
-{
-  ascent (j in 0..360)
+  while(ObjMove_GetAngle(laser) != GetAngleToPlayer(laser))
   {
-    let bullets = CreateShotA1(GetPlayerX() + (25 * cos(j)), GetPlayerY() + (25 * sin(j)), 0, 0, KNIFE_RED, 20);
-    ObjMove_SetAngle(bullets, GetAngleToPlayer(bullets) + 180);
-    ObjMove_SetSpeed(bullets, 10);
+    yield;
   }
-}
 
-task bulletWallExpire(obj)
-{
-  wait(80);
-  //CreateLooseLaserA1(ObjMove_GetX(obj), ObjMove_GetY(obj), 10, GetAngleToPlayer(obj) + 180, 300, 16, C_LASER_YELLOW, 1);
-  wait(1);
-  Obj_Delete(obj);
-  wait(20);
-  firstShot = false;
+  ObjMove_SetAngularVelocity(laser, 0);
 }
 
 task DrawLoop
@@ -112,12 +88,6 @@ task TFinalize
   while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
   {
     yield;
-  }
-
-  //Add spellcard bonuses
-  if(ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SHOOTDOWN_COUNT) + ObjEnemyBossScene_GetInfo(objScene, INFO_PLAYER_SPELL_COUNT) == 0)
-  {
-    AddScore(ObjEnemyBossScene_GetInfo(objScene, INFO_SPELL_SCORE));
   }
 
   Obj_Delete(objBoss); //Delete boss
