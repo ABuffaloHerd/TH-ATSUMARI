@@ -15,7 +15,7 @@ let count = 0;
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(2000);
+    SetScriptResult(6000);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -48,9 +48,15 @@ let count = 0;
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
 
-  if (count % 60 == 0)
+  if (count % 80 == 0 && count > 60)
   {
     lasercurve;
+    lasercurveNiggative;
+  }
+
+  if(ObjEnemy_GetInfo(objBoss, INFO_LIFE) < 4500 && count % 100 == 0)
+  {
+    morePain;
   }
 
   count++;
@@ -59,19 +65,89 @@ let count = 0;
 
 task lasercurve
 {
-  let laser = CreateCurveLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 7, 90, 40, 18, C_LASER_PURPLE, 1);
-  ObjCrLaser_SetTipDecrement(laser, 0); //make the tip of the laser visible
-  ascent (i in 2..10)
+  let angleInit = rand(0, 360);
+  loop(30)
+  {
+    //Create laser
+    let laser = CreateCurveLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleInit, 40, 18, C_LASER_PURPLE, 1);
+    ObjCrLaser_SetTipDecrement(laser, 0); //make the tip of the laser visible
+
+    laserMovements(laser);
+    
+    angleInit += 360/30
+  }
+}
+
+task laserMovements (laser)
+{
+//laser movement
+  ascent (i in 1..10)
   {
     ObjMove_SetAngularVelocity(laser, i);
     wait(10);
+    ObjMove_SetAngularVelocity(laser, 0);
   }
-  while(ObjMove_GetAngle(laser) != GetAngleToPlayer(laser))
+
+}
+
+task lasercurveNiggative
+{
+  let angleInit = rand(0, 360);
+  loop(30)
+  {
+    //Create laser
+    let laser = CreateCurveLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleInit, 40, 18, C_LASER_PURPLE, 1);
+    ObjCrLaser_SetTipDecrement(laser, 0); //make the tip of the laser visible
+
+    laserMovementsNiggative(laser);
+    
+    angleInit -= 360/30
+  }
+}
+
+task laserMovementsNiggative (laser)
+{
+//laser movement
+  ascent (i in 1..10)
+  {
+    ObjMove_SetAngularVelocity(laser, i * -1);
+    wait(10);
+    ObjMove_SetAngularVelocity(laser, 0);
+  }
+
+}
+
+task morePain
+{
+  let amulet = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 6, 90, -0.2, 0, A_AMULET_MAGENTA, 5);
+  while(ObjMove_GetSpeed(amulet) > 0)
   {
     yield;
   }
 
-  ObjMove_SetAngularVelocity(laser, 0);
+  //Actual shooting of new amulets
+  let angle = GetAngleToPlayer(objBoss) - 90;
+  let randOffset = rand(-40, 40);
+  loop(30)
+  {
+    let newAmulet = CreateShotA1(ObjMove_GetX(amulet), ObjMove_GetY(amulet), 5, angle, A_AMULET_BLUE, 2);
+    newAmuletMove(newAmulet, randOffset);
+    angle += 180/30
+  }
+  Obj_Delete(amulet);
+}
+
+task newAmuletMove(bullet, offset)
+{
+  ObjMove_SetAcceleration(bullet, -0.1);
+  while(ObjMove_GetSpeed(bullet) > 0)
+  {
+    yield;
+  }
+  
+  ObjMove_SetAcceleration(bullet, 0);
+  ObjMove_SetSpeed(bullet, 3);
+  ObjMove_SetAngle(bullet, ObjMove_GetAngle(bullet) + offset)
 }
 
 task DrawLoop
