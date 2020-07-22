@@ -1,0 +1,9 @@
+//This is a background file
+
+let bSpell = false;
+
+@Initialize
+{
+  // SetCameraFocusXYZ(0, 0, 0);
+  // SetCameraRadius(550)
+}
