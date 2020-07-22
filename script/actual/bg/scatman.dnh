@@ -1,5 +1,4 @@
 //This is a background file
-
 let bSpell = false;
 
 @Initialize
@@ -7,3 +6,43 @@ let bSpell = false;
   // SetCameraFocusXYZ(0, 0, 0);
   // SetCameraRadius(550)
 }
+
+@MainLoop
+{
+  yield;
+}
+
+task TSpellBackground
+{
+  let scatmanJohn = "./texture/scatman.jpg";
+
+  let background1 = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetAlpha(background1, BLEND_ALPHA);
+  Obj_SetRenderPriority(background1, 0.21);
+  ObjPrim_SetTexture(background1, scatmanJohn);
+  ObjSprite2D_SetSourceRect(background1, 0, 0, 1024, 1024);
+  ObjSprite2D_SetDestRect(background1, -256, -256, 256, 256);
+  objsprite
+  ObjRender_SetPosition(background1, 384/2, 448/2, 1);
+
+  let frame = 0;
+  let alpha = 0;
+
+  loop
+  {
+    if (bSpell) //if spellcard
+    {
+      alpha = 255;
+    }
+    else
+    {
+      alpha = 0;
+    }
+
+    Obj_SetVisible(background1, alpha > 0);
+
+    frame++;
+    yield;
+  }
+}
+

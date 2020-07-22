@@ -2,6 +2,8 @@
 #ScriptVersion[3]
 #Title["Scatman's World"]
 #Text["PA PO PE"] 
+//#System["./bg/scatman.dnh"]
+#Background["./bg/scatman.dnh"]
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
