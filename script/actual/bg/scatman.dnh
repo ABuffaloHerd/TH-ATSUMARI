@@ -6,7 +6,7 @@ let bSpell = false;
   SetCameraFocusX(0);
   SetCameraFocusY(0);
   SetCameraFocusZ(0);
-  SetCameraRadius(550);
+  SetCameraRadius(1550);
   TSpellBackground;
 }
 
@@ -27,15 +27,24 @@ let bSpell = false;
 
 task TSpellBackground
 {
-  let scatmanJohn = "./bg/texture/scatman.png";
+  let scatmanJohn = GetCurrentScriptDirectory() ~ "texture/scatman.png";
 
-  let background1 = ObjPrim_Create(OBJ_SPRITE_2D);
-  ObjRender_SetAlpha(background1, BLEND_ALPHA);
-  Obj_SetRenderPriority(background1, 0.21);
-  ObjPrim_SetTexture(background1, scatmanJohn);
-  ObjSprite2D_SetSourceRect(background1, 0, 0, 1024, 1024);
-  ObjSprite2D_SetDestRect(background1, 0, 0, 1024, 1024);
-  ObjRender_SetPosition(background1, 384/2, 448/2, 1);
+
+  // let background1 = ObjPrim_Create(OBJ_SPRITE_2D);
+  // ObjRender_SetBlendType(background1, BLEND_ALPHA);
+  // Obj_SetRenderPriority(background1, 0.21);
+  // ObjPrim_SetTexture(background1, scatmanJohn);
+  // ObjSprite2D_SetSourceRect(background1, 0, 0, 1024, 1024);
+  // ObjSprite2D_SetDestRect(background1, -64, -64, 64, 64);
+  // ObjRender_SetPosition(background1, 384/2, 448/2, 1.1);
+
+  let background2 = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(background2, BLEND_ALPHA);
+  Obj_SetRenderPriority(background2, 0.21);
+  ObjPrim_SetTexture(background2, scatmanJohn);
+  ObjSprite2D_SetSourceRect(background2, 0, 0, 1024, 1024);
+  ObjSprite2D_SetDestRect(background2, -256, -256, 256, 256);
+  ObjRender_SetPosition(background2, 384/2, 448/2, 1.1);
 
   let frame = 0;
   let alpha = 0;
@@ -51,7 +60,9 @@ task TSpellBackground
       alpha = 0;
     }
 
-    Obj_SetVisible(background1, alpha > 0);
+    //Obj_SetVisible(background1, alpha > 0);
+    Obj_SetVisible(background2, alpha > 0);
+    ObjSprite2D_SetSourceRect(background2, 0 + (frame * 1) % 1024, 0 + (frame * 2) % 1024, 1024 + (frame * 1) % 1024, 1024 + (frame * 2) % 1024);
 
     frame++;
     yield;

@@ -2,7 +2,7 @@
 #ScriptVersion[3]
 #Title["Scatman's World"]
 #Text["PA PO PE"] 
-#Background[GetCurrentScriptDirectory() ~ "/bg/scatman.txt"]
+#Background["/script/actual/bg/scatman.dnh"]
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
@@ -11,6 +11,7 @@
 let objBoss;
 let count = 0;
 let objScene = GetEnemyBossSceneObjectID();
+let bSpell = true;
 
 @Event
 {
@@ -32,6 +33,13 @@ let objScene = GetEnemyBossSceneObjectID();
 
 @Initialize 
 {
+	SetCameraFocusX(0);
+	SetCameraFocusY(0);
+	SetCameraFocusZ(0);
+	SetCameraRadius(550);
+	SetCameraElevationAngle(35);
+	SetCameraAzimuthAngle(90);
+
   objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
   ObjEnemy_Regist(objBoss);
 
@@ -53,6 +61,17 @@ let objScene = GetEnemyBossSceneObjectID();
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+  let objScene = GetEnemyBossSceneObjectID();
+	if(objScene != ID_INVALID && ObjEnemyBossScene_GetInfo(objScene, INFO_IS_SPELL))
+	{
+		bSpell = true;
+	}
+	else
+	{
+		bSpell = false;
+	}
+
   count++;
   yield;
 }
