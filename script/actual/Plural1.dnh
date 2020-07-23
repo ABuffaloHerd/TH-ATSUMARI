@@ -2,6 +2,7 @@
 #ScriptVersion[3]
 #Title["TestFight1"]
 #Text["Sample bossfight"] 
+#Background[GetCurrentScriptDirectory() ~ "./bg/scatman.dnh"]
 
 
 @Event

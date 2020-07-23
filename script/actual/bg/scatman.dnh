@@ -3,26 +3,38 @@ let bSpell = false;
 
 @Initialize
 {
-  // SetCameraFocusXYZ(0, 0, 0);
-  // SetCameraRadius(550)
+  SetCameraFocusX(0);
+  SetCameraFocusY(0);
+  SetCameraFocusZ(0);
+  SetCameraRadius(550);
+  TSpellBackground;
 }
 
 @MainLoop
 {
+  let objScene = GetEnemyBossSceneObjectID();
+	if(objScene != ID_INVALID && ObjEnemyBossScene_GetInfo(objScene, INFO_IS_SPELL))
+	{
+		bSpell = true;
+	}
+	else
+	{
+		bSpell = false;
+	}
+	
   yield;
 }
 
 task TSpellBackground
 {
-  let scatmanJohn = "./texture/scatman.jpg";
+  let scatmanJohn = "./bg/texture/scatman.png";
 
   let background1 = ObjPrim_Create(OBJ_SPRITE_2D);
   ObjRender_SetAlpha(background1, BLEND_ALPHA);
   Obj_SetRenderPriority(background1, 0.21);
   ObjPrim_SetTexture(background1, scatmanJohn);
   ObjSprite2D_SetSourceRect(background1, 0, 0, 1024, 1024);
-  ObjSprite2D_SetDestRect(background1, -256, -256, 256, 256);
-  objsprite
+  ObjSprite2D_SetDestRect(background1, 0, 0, 1024, 1024);
   ObjRender_SetPosition(background1, 384/2, 448/2, 1);
 
   let frame = 0;

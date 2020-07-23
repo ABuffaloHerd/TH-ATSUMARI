@@ -2,6 +2,7 @@
 #ScriptVersion[3]
 #Title["Circle Shot"]
 #Text["base file for nonspells"] 
+#Background["./bg/scatman.txt"]
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
