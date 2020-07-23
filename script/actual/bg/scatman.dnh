@@ -53,7 +53,7 @@ task TSpellBackground
   {
     if (bSpell) //if spellcard
     {
-      alpha = 255;
+      alpha += 4;
     }
     else
     {
@@ -62,6 +62,7 @@ task TSpellBackground
 
     //Obj_SetVisible(background1, alpha > 0);
     Obj_SetVisible(background2, alpha > 0);
+    ObjRender_SetAlpha(background2, alpha);
     ObjSprite2D_SetSourceRect(background2, 0 + (frame * 1) % 1024, 0 + (frame * 2) % 1024, 1024 + (frame * 1) % 1024, 1024 + (frame * 2) % 1024);
 
     frame++;
