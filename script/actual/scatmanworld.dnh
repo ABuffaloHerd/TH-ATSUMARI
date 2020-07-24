@@ -129,6 +129,10 @@ task PAPOPE
 
 task Scatman(obj)
 {
+  if(Obj_IsDeleted(obj))
+  {
+    return;
+  }
   let angleRef = GetAngleToPlayer(obj);
   while(ObjMove_GetSpeed(obj) > 0)
   {
@@ -140,7 +144,7 @@ task Scatman(obj)
   PlaySE(twinkle);
   loop(10)
   {
-    CreateShotA1(ObjMove_GetX(obj), ObjMove_GetY(obj), rand(0.1, 5), angleRef, S_STAR_YELLOW, 1);
+    CreateShotA1(ObjMove_GetX(obj), ObjMove_GetY(obj), rand(0.1, 3), angleRef, S_STAR_YELLOW, 1);
     angleRef += 360/10
   }
   Obj_Delete(obj);
