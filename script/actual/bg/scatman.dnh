@@ -41,7 +41,7 @@ task TSpellBackground
 
   let background2 = ObjPrim_Create(OBJ_SPRITE_2D);
   ObjRender_SetBlendType(background2, BLEND_ALPHA);
-  Obj_SetRenderPriority(background2, 0.21);
+  Obj_SetRenderPriority(background2, 0.22);
   ObjPrim_SetTexture(background2, scatmanJohn);
   ObjSprite2D_SetSourceRect(background2, 0, 0, 1024, 1024);
   ObjSprite2D_SetDestRect(background2, -256, -256, 256, 256);
@@ -90,6 +90,6 @@ task ground
   ObjPrim_SetTexture(objGround, ground);
   // ObjSprite3D_SetSourceRect(objGround, 0, 0, 2448, 2448);
   // ObjSprite3D_SetDestRect(objGround, -1224, -1224, 1224, 1224);
-  ObjSprite3D_SetSourceDestRect(objGround, 0, 0, 1224*16, 1224*16);
+  ObjSprite3D_SetSourceDestRect(objGround, 0, 0, 1224*4, 1224*4);
   ObjRender_SetAngleX(objGround, 90);
 }

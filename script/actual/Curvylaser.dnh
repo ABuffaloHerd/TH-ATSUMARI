@@ -2,6 +2,7 @@
 #ScriptVersion[3]
 #Title["Curvy laser"]
 #Text["Curvy lasers are fun and good to look at."] 
+#Background["/script/actual/bg/3dtest.dnh"]
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"

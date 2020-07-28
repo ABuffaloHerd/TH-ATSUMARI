@@ -1,14 +1,35 @@
 //This is a 3d background script
 let camcount = 90;
+let frame = 0;
+let camAngle = 50;
+let camRadius = 1700;
+let bSpell = false;
+
 @Initialize
 {
   SetCameraFocusXYZ(0, 0, 550);
+  
+  SetCameraAzimuthAngle(-90);
+  SetCameraElevationAngle(camAngle);
+  SetCameraRadius(550);
   ground;
+  render2DBG;
 }
 
 @MainLoop
 {
-  D3Background;
+  // D3Background;
+  let objScene = GetEnemyBossSceneObjectID();
+	if(objScene != ID_INVALID && ObjEnemyBossScene_GetInfo(objScene, INFO_IS_SPELL))
+	{
+		bSpell = true;
+	}
+	else
+	{
+		bSpell = false;
+	}
+	
+  yield;
   
   yield;
 }
@@ -29,23 +50,97 @@ task D3Background
   ObjSprite3D_SetDestRect(obj3d, -71, -71, 71, 71);
 
   ObjRender_SetAngleX(obj3d, 180);
-  ObjRender_SetPosition(obj3d, 0, 0, 
-  550);
+  ObjRender_SetPosition(obj3d, 0, 0, 1550);
+}
+
+task render2DBG
+{
+  let background = GetCurrentScriptDirectory() ~ "texture/sky1.png";
+
+  let objSky = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(objSky, BLEND_ALPHA);
+  Obj_SetRenderPriority(objSky, 0.20);
+  ObjPrim_SetTexture(objSky, background);
+  ObjSprite2D_SetSourceRect(objSky, 0, 0, 1024, 1024);
+  ObjSprite2D_SetDestRect(objSky, -512, -512, 512, 512);
+
+  ObjRender_SetPosition(objSky, 384/2, 448/2, 1.1);
 }
 
 task ground
 {
-  let ground = GetCurrentScriptDirectory() ~ "texture/rocks.png";
-
-  SetCameraAzimuthAngle(-90);
-  SetCameraElevationAngle(15);
+  let ground = GetCurrentScriptDirectory() ~ "texture/ground.png";
 
   let objGround = ObjPrim_Create(OBJ_SPRITE_3D);
   ObjRender_SetBlendType(objGround, BLEND_ALPHA);
   Obj_SetRenderPriority(objGround, 0.21);
   ObjPrim_SetTexture(objGround, ground);
-  // ObjSprite3D_SetSourceRect(objGround, 0, 0, 2448, 2448);
-  // ObjSprite3D_SetDestRect(objGround, -1224, -1224, 1224, 1224);
-  ObjSprite3D_SetSourceDestRect(objGround, 0, 0, 1224*16, 1224*16);
+  // ObjSprite3D_SetSourceRect(objGround, 0, 0, 512, 512);
+  // ObjSprite3D_SetDestRect(objGround, -256, -256, 256, 256);
+  ObjSprite3D_SetSourceDestRect(objGround, 0, 0, 512*16, 512*16);
   ObjRender_SetAngleX(objGround, 90);
+
+  loop
+  {
+    ObjSprite3D_SetSourceRect(objGround, 0, (0 + (frame * 1) % 1024) * 31, 512 * 31, (512 + (frame * 1) % 1024) * 32);
+    SetCameraElevationAngle(camAngle);
+    SetCameraRadius(camRadius);
+
+    if (camAngle > 15)
+    {
+      camAngle -= 0.1;
+    }
+
+    if (camRadius > 500 && camAngle < 60)
+    {
+      camRadius -= 3;
+    }
+    frame++;
+    yield;
+  }
+}
+
+task TSpellBackground
+{
+  let scatmanJohn = GetCurrentScriptDirectory() ~ "texture/scatman.png";
+
+
+  // let background1 = ObjPrim_Create(OBJ_SPRITE_2D);
+  // ObjRender_SetBlendType(background1, BLEND_ALPHA);
+  // Obj_SetRenderPriority(background1, 0.21);
+  // ObjPrim_SetTexture(background1, scatmanJohn);
+  // ObjSprite2D_SetSourceRect(background1, 0, 0, 1024, 1024);
+  // ObjSprite2D_SetDestRect(background1, -64, -64, 64, 64);
+  // ObjRender_SetPosition(background1, 384/2, 448/2, 1.1);
+
+  let background2 = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(background2, BLEND_ALPHA);
+  Obj_SetRenderPriority(background2, 0.22);
+  ObjPrim_SetTexture(background2, scatmanJohn);
+  ObjSprite2D_SetSourceRect(background2, 0, 0, 1024, 1024);
+  ObjSprite2D_SetDestRect(background2, -256, -256, 256, 256);
+  ObjRender_SetPosition(background2, 384/2, 448/2, 1.1);
+
+  let frame = 0;
+  let alpha = 0;
+
+  loop
+  {
+    if (bSpell) //if spellcard
+    {
+      alpha += 4;
+    }
+    else
+    {
+      alpha = 0;
+    }
+
+    //Obj_SetVisible(background1, alpha > 0);
+    Obj_SetVisible(background2, alpha > 0);
+    ObjRender_SetAlpha(background2, alpha);
+    ObjSprite2D_SetSourceRect(background2, 0 + (frame * 1) % 1024, 0 + (frame * 2) % 1024, 1024 + (frame * 1) % 1024, 1024 + (frame * 2) % 1024);
+
+    frame++;
+    yield;
+  }
 }
