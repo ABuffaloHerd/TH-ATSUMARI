@@ -1,0 +1,51 @@
+//This is a 3d background script
+let camcount = 90;
+@Initialize
+{
+  SetCameraFocusXYZ(0, 0, 550);
+  ground;
+}
+
+@MainLoop
+{
+  D3Background;
+  
+  yield;
+}
+
+task D3Background
+{
+  let sponge = GetCurrentScriptDirectory() ~ "texture/spongebob.jpg";
+
+
+  // SetCameraAzimuthAngle(-80);
+  // SetCameraElevationAngle(20);
+
+  let obj3d = ObjPrim_Create(OBJ_SPRITE_3D);
+  ObjRender_SetBlendType(obj3d, BLEND_ALPHA);
+  Obj_SetRenderPriority(obj3d, 0.21);
+  ObjPrim_SetTexture(obj3d, sponge);
+  ObjSprite3D_SetSourceRect(obj3d, 0, 0, 143, 143);
+  ObjSprite3D_SetDestRect(obj3d, -71, -71, 71, 71);
+
+  ObjRender_SetAngleX(obj3d, 180);
+  ObjRender_SetPosition(obj3d, 0, 0, 
+  550);
+}
+
+task ground
+{
+  let ground = GetCurrentScriptDirectory() ~ "texture/rocks.png";
+
+  SetCameraAzimuthAngle(-90);
+  SetCameraElevationAngle(15);
+
+  let objGround = ObjPrim_Create(OBJ_SPRITE_3D);
+  ObjRender_SetBlendType(objGround, BLEND_ALPHA);
+  Obj_SetRenderPriority(objGround, 0.21);
+  ObjPrim_SetTexture(objGround, ground);
+  // ObjSprite3D_SetSourceRect(objGround, 0, 0, 2448, 2448);
+  // ObjSprite3D_SetDestRect(objGround, -1224, -1224, 1224, 1224);
+  ObjSprite3D_SetSourceDestRect(objGround, 0, 0, 1224*16, 1224*16);
+  ObjRender_SetAngleX(objGround, 90);
+}

@@ -8,6 +8,7 @@ let bSpell = false;
   SetCameraFocusZ(0);
   SetCameraRadius(1550);
   TSpellBackground;
+  ground;
 }
 
 @MainLoop
@@ -70,3 +71,25 @@ task TSpellBackground
   }
 }
 
+task TNormalBackground
+{
+  
+}
+
+
+task ground
+{
+  let ground = GetCurrentScriptDirectory() ~ "texture/rocks.png";
+
+  SetCameraAzimuthAngle(-90);
+  SetCameraElevationAngle(15);
+
+  let objGround = ObjPrim_Create(OBJ_SPRITE_3D);
+  ObjRender_SetBlendType(objGround, BLEND_ALPHA);
+  Obj_SetRenderPriority(objGround, 0.21);
+  ObjPrim_SetTexture(objGround, ground);
+  // ObjSprite3D_SetSourceRect(objGround, 0, 0, 2448, 2448);
+  // ObjSprite3D_SetDestRect(objGround, -1224, -1224, 1224, 1224);
+  ObjSprite3D_SetSourceDestRect(objGround, 0, 0, 1224*16, 1224*16);
+  ObjRender_SetAngleX(objGround, 90);
+}
