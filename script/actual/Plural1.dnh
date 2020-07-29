@@ -2,7 +2,7 @@
 #ScriptVersion[3]
 #Title["TestFight1"]
 #Text["Sample bossfight"] 
-#Background["/script/actual/bg/scatman.dnh"]
+#Background["/script/actual/bg/3dtest.dnh"]
 
 
 @Event

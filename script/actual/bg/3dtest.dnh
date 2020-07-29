@@ -14,6 +14,7 @@ let bSpell = false;
   SetCameraRadius(550);
   ground;
   render2DBG;
+  TSpellBackground;
 }
 
 @MainLoop
@@ -55,7 +56,7 @@ task D3Background
 
 task render2DBG
 {
-  let background = GetCurrentScriptDirectory() ~ "texture/sky1.png";
+  let background = GetCurrentScriptDirectory() ~ "texture/bleh-large.png";
 
   let objSky = ObjPrim_Create(OBJ_SPRITE_2D);
   ObjRender_SetBlendType(objSky, BLEND_ALPHA);
@@ -69,7 +70,7 @@ task render2DBG
 
 task ground
 {
-  let ground = GetCurrentScriptDirectory() ~ "texture/ground.png";
+  let ground = GetCurrentScriptDirectory() ~ "texture/bricks.png";
 
   let objGround = ObjPrim_Create(OBJ_SPRITE_3D);
   ObjRender_SetBlendType(objGround, BLEND_ALPHA);
@@ -77,21 +78,21 @@ task ground
   ObjPrim_SetTexture(objGround, ground);
   // ObjSprite3D_SetSourceRect(objGround, 0, 0, 512, 512);
   // ObjSprite3D_SetDestRect(objGround, -256, -256, 256, 256);
-  ObjSprite3D_SetSourceDestRect(objGround, 0, 0, 512*16, 512*16);
+  ObjSprite3D_SetSourceDestRect(objGround, 0, 0, 800*16, 800*16);
   ObjRender_SetAngleX(objGround, 90);
 
   loop
   {
-    ObjSprite3D_SetSourceRect(objGround, 0, (0 + (frame * 1) % 1024) * 31, 512 * 31, (512 + (frame * 1) % 1024) * 32);
+    ObjSprite3D_SetSourceRect(objGround, 0, (0 + (frame * 0.1) % 1600) * 32, 800 * 32, (512 + (frame * 0.1) % 1600) * 32);
     SetCameraElevationAngle(camAngle);
     SetCameraRadius(camRadius);
 
-    if (camAngle > 15)
+    if (camAngle > 35)
     {
       camAngle -= 0.1;
     }
 
-    if (camRadius > 500 && camAngle < 60)
+    if (camRadius > 550 && camAngle < 60)
     {
       camRadius -= 3;
     }
