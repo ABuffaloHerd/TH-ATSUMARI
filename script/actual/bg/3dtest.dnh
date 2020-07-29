@@ -14,6 +14,7 @@ let bSpell = false;
   SetCameraRadius(550);
   ground;
   render2DBG;
+  TSpellBackground;
 }
 
 @MainLoop
@@ -115,7 +116,7 @@ task TSpellBackground
 
   let background2 = ObjPrim_Create(OBJ_SPRITE_2D);
   ObjRender_SetBlendType(background2, BLEND_ALPHA);
-  Obj_SetRenderPriority(background2, 0.22);
+  Obj_SetRenderPriority(background2, 0.23);
   ObjPrim_SetTexture(background2, scatmanJohn);
   ObjSprite2D_SetSourceRect(background2, 0, 0, 1024, 1024);
   ObjSprite2D_SetDestRect(background2, -256, -256, 256, 256);
