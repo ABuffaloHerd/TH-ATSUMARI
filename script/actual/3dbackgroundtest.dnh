@@ -40,6 +40,7 @@ let bgm = GetCurrentScriptDirectory() ~ "bgm/scatmanworld.mp3";
 
   LoadSound(bgm);
 
+  drawMagicCircle;
   DrawLoop;
   TFinalize;
 }
@@ -51,8 +52,7 @@ let bgm = GetCurrentScriptDirectory() ~ "bgm/scatmanworld.mp3";
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
-
-  PlayBGM(bgm, 0, 223);
+  // PlayBGM(bgm, 0, 223);
   count++;
   yield;
 }
@@ -60,7 +60,7 @@ let bgm = GetCurrentScriptDirectory() ~ "bgm/scatmanworld.mp3";
 task DrawLoop
 {
   let image = GetCurrentScriptDirectory() ~ "./sprite/th16.png"; // Set okina
-  ObjPrim_SetTexture(objBoss, image); // Set objBoss texture to imgRumia
+  ObjPrim_SetTexture(objBoss, image); // Set objBoss texture to image
   ObjSprite2D_SetSourceRect(objBoss, 10, 2304, 103, 2407); // Spritesheet coords for one texture
   ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
 }
@@ -78,4 +78,27 @@ task TFinalize
   SetAutoDeleteObject(true); // Auto delete objects
   CloseScript(GetOwnScriptID()); // Close the script
   return; //Fuck off
+}
+
+task drawMagicCircle
+{
+  //Magic Circle
+  let circleSprite = GetCurrentScriptDirectory() ~ "./sprite/magicCircle.png"; //set texture
+  let magicCircle = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjPrim_SetTexture(magicCircle, circleSprite);
+  ObjSprite2D_SetSourceRect(magicCircle, 0, 0, 1024, 1024);
+  ObjRender_SetScaleXYZ(magicCircle, 0.25, 0.25, 1);
+  ObjSprite2D_SetDestCenter(magicCircle);
+  ObjRender_SetBlendType(magicCircle, BLEND_ALPHA);
+  ObjRender_SetAlpha(magicCircle, 180);
+
+  let counter = 0;
+
+  loop
+  {
+    ObjRender_SetPosition(magicCircle, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 0);
+    ObjRender_SetAngleXYZ(magicCircle, counter * 0.1, counter * 0.3, 200 * sin(0.4 * counter));
+    counter++;
+    yield;
+  }
 }
