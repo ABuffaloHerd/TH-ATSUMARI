@@ -10,6 +10,7 @@
 //Declare some global variables
 let objBoss;
 let count = 0;
+let bgm = GetCurrentScriptDirectory() ~ "bgm/scatmanworld.mp3";
 
 @Event
 {
@@ -37,6 +38,8 @@ let count = 0;
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
 
+  LoadSound(bgm);
+
   DrawLoop;
   TFinalize;
 }
@@ -48,6 +51,8 @@ let count = 0;
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+  PlayBGM(bgm, 0, 223);
   count++;
   yield;
 }

@@ -1,30 +1,25 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["Scatman's World"]
-#Text["PA PO PE"] 
-#Background["/script/actual/bg/scatman.dnh"]
+#Title["FX TESST"]
+#Text["Using bfx library"] 
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
+#include "./BFX/BFX.dnh"
 
 //Declare some global variables
 let objBoss;
 let count = 0;
-let objScene = GetEnemyBossSceneObjectID();
-let bSpell = true;
-let bgmPath = GetCurrentScriptDirectory() ~ "./bgm/scatmanworld.mp3";
 
-//Sounds
-let shot1 = GetCurrentScriptDirectory() ~ "./se/ATTACK3.wav";
-let spellCard = GetCurrentScriptDirectory() ~ "./se/SPELLCARD.wav";
-let twinkle = GetCurrentScriptDirectory() ~ "./se/TWINKLE.wav";
+//initialize bfx library
+BFX_Init();
 
 @Event
 {
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(6000);
+    SetScriptResult(2000);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -39,24 +34,11 @@ let twinkle = GetCurrentScriptDirectory() ~ "./se/TWINKLE.wav";
 
 @Initialize 
 {
-
   objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
   ObjEnemy_Regist(objBoss);
 
-  //start spell
-  ObjEnemyBossScene_StartSpell(objScene);
-  LoadSound(spellCard);
-  PlaySE(spellCard);
-
-  //Load sounds
-  LoadSound(shot1);
-  LoadSound(twinkle);
-
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
-
-  //Load scatman song
-  LoadSound(bgmPath);
 
   DrawLoop;
   TFinalize;
@@ -69,24 +51,11 @@ let twinkle = GetCurrentScriptDirectory() ~ "./se/TWINKLE.wav";
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
-  // PlayBGM(bgmPath, 0, 223);
-  
-  let objScene = GetEnemyBossSceneObjectID();
-	if(objScene != ID_INVALID && ObjEnemyBossScene_GetInfo(objScene, INFO_IS_SPELL))
-	{
-		bSpell = true;
-	}
-	else
-	{
-		bSpell = false;
-	}
 
-
-  if(count > 60 && count % 105 == 0)
+  if(count % 100 == 0)
   {
-    PAPOPE;
+    BFX_Charge(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 100, 60);
   }
-
   count++;
   yield;
 }
@@ -112,40 +81,4 @@ task TFinalize
   SetAutoDeleteObject(true); // Auto delete objects
   CloseScript(GetOwnScriptID()); // Close the script
   return; //Fuck off
-}
-
-task PAPOPE
-{
-  let angleT = GetAngleToPlayer(objBoss);
-  PlaySE(shot1);
-  loop(30)
-  {
-    let bul1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 6, angleT, -0.21, 0, STAR_RED, 4);
-    Scatman(bul1);
-    angleT += 360/30;
-  }
-
-}
-
-task Scatman(obj)
-{
-  if(Obj_IsDeleted(obj))
-  {
-    return;
-  }
-  let angleRef = GetAngleToPlayer(obj);
-  while(ObjMove_GetSpeed(obj) > 0)
-  {
-    yield;
-  }
-
-  CreateStraightLaserA1(ObjMove_GetX(obj), ObjMove_GetY(obj), ObjMove_GetAngle(obj), 512, 20, 40, ST_LASER_GREEN, 20);
-  wait(10);
-  PlaySE(twinkle);
-  loop(10)
-  {
-    CreateShotA1(ObjMove_GetX(obj), ObjMove_GetY(obj), rand(0.1, 3), angleRef, S_STAR_YELLOW, 1);
-    angleRef += 360/10
-  }
-  Obj_Delete(obj);
 }
