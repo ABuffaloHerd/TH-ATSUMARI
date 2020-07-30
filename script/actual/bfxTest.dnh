@@ -54,7 +54,9 @@ BFX_Init();
 
   if(count % 100 == 0)
   {
-    BFX_Charge(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 100, 60);
+    BFX_Release(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 100, 60);
+    wait(60);
+    // BFX_Explosion(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 200, 5);
   }
   count++;
   yield;
