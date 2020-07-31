@@ -6,11 +6,15 @@
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
+#include "./BFX/BFX.dnh"
 
 //Declare some global variables
 let objBoss;
 let count = 0;
 let bgm = GetCurrentScriptDirectory() ~ "bgm/scatmanworld.mp3";
+
+//Init bfx library
+BFX_Init();
 
 @Event
 {
@@ -101,4 +105,20 @@ task drawMagicCircle
     counter++;
     yield;
   }
+}
+
+task spray
+{
+  // Get random angle
+  let angleT = rand(0, 180);
+  
+  // Create counter
+  let counter = 0;
+  
+  //Bullets spawn in line from angle
+  let originX = ObjMove_GetX(objBoss);
+  let originY = ObjMove_GetY(objBoss);
+  
+  CreateLooseLaserA1(originX, originY, 6, angleT, 200, 10, C_LASER_AQUA, 1);
+  
 }
