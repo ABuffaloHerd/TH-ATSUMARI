@@ -1,0 +1,132 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["Bruh momento 1"]
+#Text["bru"] 
+
+#include "./shot/ZUNShot_Const.txt" //Some bullet graphics
+#include "./lib.dnh"
+#include "./BFX/BFX.dnh"
+
+//Declare some global variables
+let objBoss;
+let count = 0;
+let objScene = GetEnemyBossSceneObjectID();
+
+//initialize bfx library
+BFX_Init();
+
+//Declare sounds
+let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan00.wav";
+let twinkle = GetCurrentScriptDirectory() ~ "./se/se_twinkle.wav";
+let caution = GetCurrentScriptDirectory() ~ "./se/se_caution.wav";
+let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
+
+@Event
+{
+  alternative(GetEventType())
+  case(EV_REQUEST_LIFE)
+  {
+    SetScriptResult(2000);
+  }
+  case(EV_REQUEST_TIMER)
+  {
+    SetScriptResult(99);
+  }
+  case(EV_REQUEST_SPELL_SCORE)
+  {
+    SetScriptResult(1000000);
+  }
+}
+
+
+@Initialize 
+{
+  objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+  ObjEnemy_Regist(objBoss);
+
+  //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+
+  //load sounds
+  LoadSound(shot1);
+  LoadSound(twinkle);
+  LoadSound(caution);
+  LoadSound(charge);
+
+  ObjEnemyBossScene_StartSpell(objScene); // Begin spellcard  
+
+  DrawLoop;
+  TFinalize;
+}
+
+@MainLoop 
+{
+  //Boss hitbox move to boss center
+  ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32);
+
+  //Player hitbox 
+  ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+  if(count > 70 && count % 140 == 0)
+  {
+    shoot;
+  }
+  count++;
+  yield;
+}
+
+task DrawLoop
+{
+  let image = GetCurrentScriptDirectory() ~ "./sprite/th16.png"; // Set okina
+  ObjPrim_SetTexture(objBoss, image); // Set objBoss texture to imgRumia
+  ObjSprite2D_SetSourceRect(objBoss, 10, 2304, 103, 2407); // Spritesheet coords for one texture
+  ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
+
+  //Magic Circle
+  let circleSprite = GetCurrentScriptDirectory() ~ "./sprite/magicCircle.png"; //set texture
+  let magicCircle = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjPrim_SetTexture(magicCircle, circleSprite);
+  ObjSprite2D_SetSourceRect(magicCircle, 0, 0, 1024, 1024);
+  ObjRender_SetScaleXYZ(magicCircle, 0.25, 0.25, 1);
+  ObjSprite2D_SetDestCenter(magicCircle);
+  ObjRender_SetBlendType(magicCircle, BLEND_ALPHA);
+  ObjRender_SetAlpha(magicCircle, 180);
+
+  let counter = 0;
+
+  loop
+  {
+    ObjRender_SetPosition(magicCircle, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 0);
+    ObjRender_SetAngleXYZ(magicCircle, sin(counter) * 10, cos(counter) * 20, 3 * counter);
+    counter++;
+    yield;
+  }
+}
+
+task TFinalize
+{
+  //Don't do anything until the boss life = 0
+  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
+  {
+    yield;
+  }
+
+  Obj_Delete(objBoss); //Delete boss
+  DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE); // Immediately delete all shots
+  SetAutoDeleteObject(true); // Auto delete objects
+  CloseScript(GetOwnScriptID()); // Close the script
+  return; //Fuck off
+}
+
+task shoot
+{
+  BFX_Charge(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 90, 85);
+  PlaySE(charge);
+  wait(100);
+
+  loop(20)
+  {
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 4, rand(0, 360), SMALL_BLUE, 1);
+  }
+  PlaySE(shot1);
+}
