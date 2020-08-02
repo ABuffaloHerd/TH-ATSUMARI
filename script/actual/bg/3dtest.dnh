@@ -105,15 +105,6 @@ task TSpellBackground
 {
   let scatmanJohn = GetCurrentScriptDirectory() ~ "texture/scatman.png";
 
-
-  // let background1 = ObjPrim_Create(OBJ_SPRITE_2D);
-  // ObjRender_SetBlendType(background1, BLEND_ALPHA);
-  // Obj_SetRenderPriority(background1, 0.21);
-  // ObjPrim_SetTexture(background1, scatmanJohn);
-  // ObjSprite2D_SetSourceRect(background1, 0, 0, 1024, 1024);
-  // ObjSprite2D_SetDestRect(background1, -64, -64, 64, 64);
-  // ObjRender_SetPosition(background1, 384/2, 448/2, 1.1);
-
   let background2 = ObjPrim_Create(OBJ_SPRITE_2D);
   ObjRender_SetBlendType(background2, BLEND_ALPHA);
   Obj_SetRenderPriority(background2, 0.23);
