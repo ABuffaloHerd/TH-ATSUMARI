@@ -2,6 +2,7 @@
 #ScriptVersion[3]
 #Title["Bruh momento 1"]
 #Text["bru"] 
+#Background["/script/actual/bg/3dtest.dnh"]
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
@@ -17,6 +18,7 @@ BFX_Init();
 
 //Declare sounds
 let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan00.wav";
+let shot2 = GetCurrentScriptDirectory() ~ "./se/se_tan02.wav";
 let twinkle = GetCurrentScriptDirectory() ~ "./se/se_twinkle.wav";
 let caution = GetCurrentScriptDirectory() ~ "./se/se_caution.wav";
 let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
@@ -26,7 +28,7 @@ let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(2000);
+    SetScriptResult(8000);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -49,6 +51,7 @@ let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
 
   //load sounds
   LoadSound(shot1);
+  LoadSound(shot2);
   LoadSound(twinkle);
   LoadSound(caution);
   LoadSound(charge);
@@ -67,7 +70,7 @@ let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
 
-  if(count > 70 && count % 140 == 0)
+  if(count > 70 && count % 300 == 0)
   {
     shoot;
   }
@@ -124,9 +127,30 @@ task shoot
   PlaySE(charge);
   wait(100);
 
+  PlaySE(shot1);
+  BFX_Explosion(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 180, 40);
+  loop(10)
+  {
+    let angleT = rand(145, 35);
+    let bullets = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, angleT, A_PELLET_ORANGE, 0);
+    owch(bullets);
+  }
+
+}
+
+task owch(bullet)
+{
+  //Some bullets
+  let bulletList = [SMALL_YELLOW, BL_SMALL_ORANGE, SMALL_WHITE, BL_SMALL_GREEN, A_PELLET_ORANGE];
   loop(20)
   {
-    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 4, rand(0, 360), SMALL_BLUE, 1);
+    CreateShotA1(ObjMove_GetX(bullet) , ObjMove_GetY(bullet), rand(1, 4), rand(0, 360), bulletList[randInt(0, 4)], 30);
+    PlaySE(shot2);
+
+    if(Obj_IsDeleted(bullet))
+    {
+      return;
+    }
+    wait(4);
   }
-  PlaySE(shot1);
 }
