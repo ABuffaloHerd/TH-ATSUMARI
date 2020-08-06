@@ -8,7 +8,7 @@ let angle = -90;
   SetCameraFocusXYZ(0, 0, 1550);
   
   SetCameraAzimuthAngle(-90);
-  SetCameraElevationAngle(30);
+  SetCameraElevationAngle(20);
   SetCameraRadius(550);
 
   SpellBackground;
@@ -28,7 +28,8 @@ let angle = -90;
 		bSpell = false;
 	}
 
-
+  // SetFogEnable(true);
+  // SetFogParam(800, 1000, 120, 120, 120);
   SetCameraAzimuthAngle(angle * 0.1);
   angle++;
   yield;

@@ -1,14 +1,16 @@
 //The final background script
 //Spell control
 let bSpell = false;
-let tileConst = 64;
+let tileConst = 128;
+let count = 0;
 
 @Initialize
 {
   SetCameraAzimuthAngle(-90);
   SetCameraElevationAngle(10);
-  SetCameraFocusXYZ(0, 0, -1050);
-  SetCameraRadius(1000);
+  SetCameraFocusXYZ(0, 0, 0);
+  SetCameraRadius(550);
+  // SetCameraRoll(25);
 
   TNormalBackground;
 }
@@ -24,26 +26,26 @@ let tileConst = 64;
 	{
 		bSpell = false;
 	}
-  
+
+  // count++;
   yield;
 }
 
 task TNormalBackground
 {
+  //Floor
   let wood = GetCurrentScriptDirectory() ~ "texture/wood.png";
 
   let floor = ObjPrim_Create(OBJ_SPRITE_3D);
   ObjRender_SetBlendType(floor, BLEND_ALPHA);
   Obj_SetRenderPriority(floor, 0.21);
   ObjPrim_SetTexture(floor, wood);
-  // ObjSprite3D_SetSourceRect(floor, 0, 0, 1024  * tileConst, 1024  * tileConst);
-  // ObjSprite3D_SetDestRect(floor, -512 * tileConst, -512 * tileConst, 512 * tileConst, 512 * tileConst);
-  ObjSprite3D_SetSourceDestRect(floor, 0, 0, 1024 * 16, 1024 * 16);
+  // ObjSprite3D_SetSourceRect(floor, 0, 0, 1024, 1024);
+  // ObjSprite3D_SetDestRect(floor, -1024 * tileConst, -1024 * tileConst, 1024 * tileConst, 1024 * tileConst);
+  ObjSprite3D_SetSourceDestRect(floor, 0, 0, 1024 * 8, 1024 * 8);
 
   // Set rotation
   ObjRender_SetAngleX(floor, 90);
-  ObjRender_SetAngleY(floor, 90);
+  ObjRender_SetAngleY(floor, -90);
 
-  //Set position
-  ObjRender_SetPosition(floor, 0, -10, 0);
 }
