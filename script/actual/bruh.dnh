@@ -2,7 +2,7 @@
 #ScriptVersion[3]
 #Title["Bruh momento 1"]
 #Text["bru"] 
-#Background["/script/actual/bg/3dtest.dnh"]
+#Background["/script/actual/bg/psychobg.dnh"]
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
@@ -13,12 +13,15 @@ let objBoss;
 let count = 0;
 let objScene = GetEnemyBossSceneObjectID();
 
+let firstShot = false;
+
 //initialize bfx library
 BFX_Init();
 
 //Declare sounds
 let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan00.wav";
 let shot2 = GetCurrentScriptDirectory() ~ "./se/se_tan02.wav";
+let shot3 = GetCurrentScriptDirectory() ~ "./se/se_graze.wav";
 let twinkle = GetCurrentScriptDirectory() ~ "./se/se_twinkle.wav";
 let caution = GetCurrentScriptDirectory() ~ "./se/se_caution.wav";
 let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
@@ -52,6 +55,7 @@ let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
   //load sounds
   LoadSound(shot1);
   LoadSound(shot2);
+  LoadSound(shot3);
   LoadSound(twinkle);
   LoadSound(caution);
   LoadSound(charge);
@@ -73,6 +77,12 @@ let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
   if(count > 70 && count % 300 == 0)
   {
     shoot;
+  }
+
+  if(count > 70 && not(firstShot))
+  {
+    filler;
+    firstShot = true;
   }
   count++;
   yield;
@@ -129,10 +139,10 @@ task shoot
 
   PlaySE(shot1);
   BFX_Explosion(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 180, 40);
-  loop(10)
+  loop(20)
   {
     let angleT = rand(145, 35);
-    let bullets = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 3, angleT, A_PELLET_ORANGE, 0);
+    let bullets = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), rand(3, 8), angleT, A_PELLET_ORANGE, 0);
     owch(bullets);
   }
 
@@ -141,10 +151,10 @@ task shoot
 task owch(bullet)
 {
   //Some bullets
-  let bulletList = [SMALL_YELLOW, BL_SMALL_ORANGE, SMALL_WHITE, BL_SMALL_GREEN, A_PELLET_ORANGE];
+  let bulletList = [SMALL_YELLOW, BL_SMALL_ORANGE, BL_SMALL_GREEN, A_PELLET_ORANGE, BL_SMALL_GREEN, BL_SMALL_YELLOW, SMALL_ORANGE, OVAL_GREEN, S_STAR_ORANGE, S_STAR_YELLOW];
   loop(20)
   {
-    CreateShotA1(ObjMove_GetX(bullet) , ObjMove_GetY(bullet), rand(1, 4), rand(0, 360), bulletList[randInt(0, 4)], 30);
+    CreateShotA2(ObjMove_GetX(bullet), ObjMove_GetY(bullet), rand(1, 6), rand(0, 360), -0.4, 1.4, bulletList[randInt(0, length(bulletList) - 1)], rand(15, 34));
     PlaySE(shot2);
 
     if(Obj_IsDeleted(bullet))
@@ -152,5 +162,20 @@ task owch(bullet)
       return;
     }
     wait(4);
+  }
+}
+
+task filler
+{
+  let angleT = 45;
+  loop(270)
+  {
+    PlaySE(shot3);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, A_LARGE_BLUE, 2);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 7, angleT + 90, A_LARGE_RED, 2);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT * -1, A_LARGE_YELLOW, 2);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 7, (angleT * -1) - 90, A_LARGE_GREEN, 2);
+    angleT += 360/50;
+    wait(1);
   }
 }

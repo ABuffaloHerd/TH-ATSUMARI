@@ -2,7 +2,7 @@
 #ScriptVersion[3]
 #Title["3D Background test"]
 #Text["base file for nonspells"] 
-#Background["/script/actual/bg/papope.dnh"]
+#Background["/script/actual/bg/bgNormal.dnh"]
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"

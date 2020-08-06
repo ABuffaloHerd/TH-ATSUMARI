@@ -29,8 +29,6 @@ let bSpell = false;
 	{
 		bSpell = false;
 	}
-	
-  yield;
   
   yield;
 }
