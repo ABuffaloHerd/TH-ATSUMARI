@@ -34,11 +34,11 @@ let count = 0;
 task TNormalBackground
 {
   //Floor
-  let wood = GetCurrentScriptDirectory() ~ "texture/wood.png";
+  let wood = GetCurrentScriptDirectory() ~ "texture/sand.png";
 
   let floor = ObjPrim_Create(OBJ_SPRITE_3D);
   ObjRender_SetBlendType(floor, BLEND_ALPHA);
-  Obj_SetRenderPriority(floor, 0.21);
+  Obj_SetRenderPriority(floor, 0.22);
   ObjPrim_SetTexture(floor, wood);
   // ObjSprite3D_SetSourceRect(floor, 0, 0, 1024, 1024);
   // ObjSprite3D_SetDestRect(floor, -1024 * tileConst, -1024 * tileConst, 1024 * tileConst, 1024 * tileConst);
@@ -47,5 +47,28 @@ task TNormalBackground
   // Set rotation
   ObjRender_SetAngleX(floor, 90);
   ObjRender_SetAngleY(floor, -90);
+
+  ObjRender_SetPosition(floor, 900, -90, 90);
+
+  let frame = 0;
+
+  //Sky
+  let sky = GetCurrentScriptDirectory() ~ "texture/clearsky.png";
+
+  let background = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(background, BLEND_ALPHA);
+  Obj_SetRenderPriority(background, 0.21);
+  ObjPrim_SetTexture(background, sky);
+
+  ObjSprite2D_SetSourceRect(background, 0, 0, 1024, 4096);
+  ObjSprite2D_SetDestRect(background, 0, 0, 1024, 1024);
+  ObjRender_SetPosition(background, 0, 0, 0);
+
+  loop
+  {
+    ObjSprite3D_SetSourceRect(floor, 0, 0 + (frame % 1024) * 0.5, 1024, 1024 + (frame % 1024) * 0.5);
+    frame++;
+    yield;
+  }
 
 }
