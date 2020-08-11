@@ -64,9 +64,25 @@ task TNormalBackground
   ObjSprite2D_SetDestRect(background, 0, 0, 1024, 1024);
   ObjRender_SetPosition(background, 0, 0, 0);
 
+  //Mountains
+  let mountain = GetCurrentScriptDirectory() ~ "texture/mount1.png";
+
+  let mountains = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(mountains, BLEND_ALPHA);
+  Obj_SetRenderPriority(mountains, 0.211);
+  ObjPrim_SetTexture(mountains, mountain);
+
+  ObjSprite2D_SetSourceRect(mountains, 0, 0, 1024, 4096);
+  ObjSprite2D_SetDestRect(mountains, 0, 0, 448, 1024);
+  ObjRender_SetPosition(mountains, 0, 0, 0);
+
   loop
   {
+    //Scroll the ground
     ObjSprite3D_SetSourceRect(floor, 0, 0 + (frame % 1024) * 0.5, 1024, 1024 + (frame % 1024) * 0.5);
+
+    //Scroll the mountains
+    ObjSprite2D_SetSourceRect(mountains, 0 + (frame * -0.3), 0, 448 + (frame * -0.3), 4096);
     frame++;
     yield;
   }
