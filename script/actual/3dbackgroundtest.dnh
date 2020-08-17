@@ -13,6 +13,8 @@ let objBoss;
 let count = 0;
 let bgm = GetCurrentScriptDirectory() ~ "bgm/scatmanworld.mp3";
 
+let objScene = GetEnemyBossSceneObjectID();
+
 //Init bfx library
 BFX_Init();
 
@@ -41,6 +43,8 @@ BFX_Init();
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+  ObjEnemyBossScene_StartSpell(objScene);
+  
 
   LoadSound(bgm);
 

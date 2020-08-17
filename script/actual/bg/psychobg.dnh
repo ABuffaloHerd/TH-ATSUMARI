@@ -65,15 +65,17 @@ task SpellBackground
   ObjRender_SetPosition(objSpellBG, 384/2, 448/2, 1.1);
 
   //now make it worse
-  let spiral = GetCurrentScriptDirectory() ~ "texture/spiral.png";
+  let spiral = GetCurrentScriptDirectory() ~ "texture/trippy1.png";
 
   let objSpiral = ObjPrim_Create(OBJ_SPRITE_2D);
-  ObjRender_SetBlendType(objSpiral, BLEND_MULTIPLY);
+  ObjRender_SetBlendType(objSpiral, BLEND_INV_DESTRGB);
   Obj_SetRenderPriority(objSpiral, 0.221);
   ObjPrim_SetTexture(objSpiral, spiral);
 
-  ObjSprite2D_SetSourceRect(objSpiral, 0, 0, 1024, 1024);
-  ObjSprite2D_SetDestRect(objSpiral, -512, -512, 512, 512);
+  // ObjSprite2D_SetSourceRect(objSpiral, 0, 0, 1024, 1024);
+  // ObjSprite2D_SetDestRect(objSpiral, -512, -512, 512, 512);
+  ObjSprite2D_SetSourceRect(objSpiral, 0, 0, 512, 512);
+  ObjSprite2D_SetDestRect(objSpiral, -256, -256, 256, 256);
 
   ObjRender_SetPosition(objSpiral, 384/2, 448/2, 1.2);
 
@@ -98,9 +100,10 @@ task SpellBackground
     ObjRender_SetAlpha(objSpellBG, alpha);
     ObjRender_SetAlpha(objSpiral, alpha);
 
-    ObjSprite2D_SetSourceRect(objSpellBG, 0 + (frame * 1) % 232, 0 + (frame * 2) % 232, 232 + (frame * 1) % 232, 232 + (frame * 2) % 232);
+    // ObjSprite2D_SetSourceRect(objSpellBG, 0 + (frame * 1) % 232, 0 + (frame * 2) % 232, 232 + (frame * 1) % 232, 232 + (frame * 2) % 232);
 
-    ObjRender_SetAngleZ(objSpiral, frame * -9);
+    // ObjRender_SetAngleZ(objSpiral, frame * -9);
+    ObjSprite2D_SetSourceRect(objSpiral, 0 + frame, 0, 512 + frame, 512);
 
     frame++;
     yield;

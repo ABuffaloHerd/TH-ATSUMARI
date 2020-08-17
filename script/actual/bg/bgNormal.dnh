@@ -1,4 +1,5 @@
 //The final background script
+
 //Spell control
 let bSpell = false;
 let tileConst = 128;
@@ -13,6 +14,7 @@ let count = 0;
   // SetCameraRoll(25);
 
   TNormalBackground;
+  TSpellBackground;
 }
 
 @MainLoop
@@ -79,12 +81,68 @@ task TNormalBackground
   loop
   {
     //Scroll the ground
-    ObjSprite3D_SetSourceRect(floor, 0, 0 + (frame % 1024) * 0.5, 1024, 1024 + (frame % 1024) * 0.5);
+    ObjSprite3D_SetSourceRect(floor, 0, (0 + (frame % 1024) * 0.5) * 8, 1024, (1024 + (frame % 1024) * 0.5) * 8);
 
     //Scroll the mountains
     ObjSprite2D_SetSourceRect(mountains, 0 + (frame * -0.3), 0, 448 + (frame * -0.3), 4096);
+
     frame++;
     yield;
   }
 
+}
+
+task TSpellBackground
+{
+  //Main background
+  let bgSpell = GetCurrentScriptDirectory() ~ "texture/spellBG.png";
+
+  let objBG = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(objBG, BLEND_ALPHA);
+  Obj_SetRenderPriority(objBG, 0.22);
+  ObjPrim_SetTexture(objBG, bgSpell);
+
+  ObjSprite2D_SetSourceRect(objBG, 0, 0, 384, 448);
+  ObjSprite2D_SetDestRect(objBG, 0, 0, 384, 448);
+  ObjRender_SetPosition(objBG, 0, 0, 1);
+
+  //Psycho effect
+  let psychoBG = GetCurrentScriptDirectory() ~ "texture/spiral-bw.png";
+
+  let spiral = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(spiral, BLEND_ADD_RGB);
+  Obj_SetRenderPriority(spiral, 0.221);
+  ObjPrim_SetTexture(spiral, psychoBG);
+
+  ObjSprite2D_SetSourceRect(spiral, 0, 0, 1024, 1024);
+  ObjSprite2D_SetDestRect(spiral, -512, -512, 512, 512);
+  ObjRender_SetPosition(spiral, GetStgFrameWidth() / 2, GetStgFrameHeight() / 2, 1);
+
+  let alpha = 0;
+  let frame = 0;
+
+
+
+  loop
+  {
+    if (bSpell) //if spellcard
+    {
+      alpha += 4;
+    }
+    else
+    {
+      alpha = 0;
+    }
+
+    Obj_SetVisible(objBG, alpha > 0);
+    ObjRender_SetAlpha(objBG, alpha);
+
+    Obj_SetVisible(spiral, alpha > 0);
+    ObjRender_SetAlpha(spiral, alpha);
+
+    ObjRender_SetAngleZ(spiral, frame * 4);
+
+    frame++;
+    yield;
+  }
 }
