@@ -2,7 +2,7 @@
 #ScriptVersion[3]
 #Title["TestFight1"]
 #Text["Sample bossfight"] 
-#Background["/script/actual/bg/3dtest.dnh"]
+#Background["/script/actual/bg/bgNormal.dnh"]
 
 
 @Event
@@ -12,14 +12,14 @@
 
 @Initialize
 {
-  LoadSound(GetCurrentScriptDirectory() ~ "./bgm/06_2.mp3");
+  LoadSound(GetCurrentScriptDirectory() ~ "./bgm/06_2_RC2.ogg");
   TPlural;
 }
 
 
 @MainLoop
 {
-  PlayBGM(GetCurrentScriptDirectory() ~ "./bgm/06_2.mp3", 11.85, 395);
+  PlayBGM(GetCurrentScriptDirectory() ~ "./bgm/06_2_RC2.ogg", 11.63, 395);
   yield;
 }
 
