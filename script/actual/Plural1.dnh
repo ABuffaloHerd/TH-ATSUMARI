@@ -34,6 +34,7 @@ task TPlural{
   ObjEnemyBossScene_Add(obj, 2, dir ~ "./Sine.dnh");
   
   ObjEnemyBossScene_Add(obj, 3, dir ~ "./scatmanworld.dnh");
+  ObjEnemyBossScene_Add(obj, 3, dir ~ "./20.dnh");
 
   ObjEnemyBossScene_Regist(obj);
 
