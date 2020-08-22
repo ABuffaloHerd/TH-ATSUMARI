@@ -1,0 +1,189 @@
+#TouhouDanmakufu[Single]
+#ScriptVersion[3]
+#Title["20"]
+#Text["20 squares"] 
+
+#include "./shot/ZUNShot_Const.txt" //Some bullet graphics
+#include "./lib.dnh"
+#include "./BFX/BFX.dnh"
+
+//Declare some global variables
+let objBoss;
+let count = 140;
+let objScene = GetEnemyBossSceneObjectID();
+
+//initialize bfx library
+BFX_Init();
+
+//declare sounds
+let laser = GetCurrentScriptDirectory() ~ "se/se_lazer00.wav";
+let pew = GetCurrentScriptDirectory() ~ "se/se_tan01.wav";
+let pew2 = GetCurrentScriptDirectory() ~ "se/se_tan02.wav";
+
+let charge = GetCurrentScriptDirectory() ~ "se/se_charge.wav";
+let rel = GetCurrentScriptDirectory() ~ "se/se_enep02.wav";
+
+
+LoadSound(laser);
+LoadSound(pew);
+LoadSound(pew2);
+LoadSound(charge);
+LoadSound(rel);
+
+@Event
+{
+  alternative(GetEventType())
+  case(EV_REQUEST_LIFE)
+  {
+    SetScriptResult(6000);
+  }
+  case(EV_REQUEST_TIMER)
+  {
+    SetScriptResult(99);
+  }
+  case(EV_REQUEST_SPELL_SCORE)
+  {
+    SetScriptResult(1000000);
+  }
+}
+
+
+@Initialize 
+{
+  objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
+  ObjEnemy_Regist(objBoss);
+
+  //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+  ObjEnemyBossScene_StartSpell(objScene);
+
+  DrawLoop;
+  TFinalize;
+}
+
+@MainLoop 
+{
+  //Boss hitbox move to boss center
+  ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32);
+
+  //Player hitbox 
+  ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
+
+
+
+  if (count % 200 == 0)
+  {
+    lasers;
+    laserHorizontal;
+  }
+  else if (count % 250 == 0)
+  {
+    spam;
+  }
+
+  count++;
+  yield;
+}
+
+task DrawLoop
+{
+  let image = GetCurrentScriptDirectory() ~ "./sprite/th16.png"; // Set okina
+  ObjPrim_SetTexture(objBoss, image); // Set objBoss texture to imgRumia
+  ObjSprite2D_SetSourceRect(objBoss, 10, 2304, 103, 2407); // Spritesheet coords for one texture
+  ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
+
+  //Magic Circle
+  let circleSprite = GetCurrentScriptDirectory() ~ "./sprite/magicCircle.png"; //set texture
+  let magicCircle = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjPrim_SetTexture(magicCircle, circleSprite);
+  ObjSprite2D_SetSourceRect(magicCircle, 0, 0, 1024, 1024);
+  ObjRender_SetScaleXYZ(magicCircle, 0.25, 0.25, 1);
+  ObjSprite2D_SetDestCenter(magicCircle);
+  ObjRender_SetBlendType(magicCircle, BLEND_ALPHA);
+  ObjRender_SetAlpha(magicCircle, 180);
+
+  let counter = 0;
+
+  loop
+  {
+    ObjRender_SetPosition(magicCircle, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 0);
+    ObjRender_SetAngleXYZ(magicCircle, sin(counter) * 10, cos(counter) * 20, 3 * counter);
+    counter++;
+    yield;
+  }
+}
+
+task lasers
+{
+  //Divide playfield into 4
+  let len = GetStgFrameWidth() / 4;
+  let xcoord = 0;
+
+  //add random offset
+  xcoord += rand(-30, 30);
+
+  loop(5)
+  {
+    PlaySE(pew);
+    CreateStraightLaserA1(xcoord, 0, 90, 512, 20, 30, CTC_LASER_PURPLE, 30);
+    xcoord += len;
+    wait(10);
+  }
+}
+
+task laserHorizontal
+{
+  //Divide height into 5
+  let lenY = GetStgFrameHeight() / 5;
+  let ycoord = 0;
+
+  //add random offset
+  ycoord += rand(-30, 30);
+
+  loop(6)
+  {
+    PlaySE(pew);
+    CreateStraightLaserA1(0, ycoord, 0, 512, 20, 30, CTC_LASER_PURPLE, 30);
+    ycoord += lenY;
+    wait(10);
+  }
+}
+
+task spam
+{
+  //Set angle
+  let angle = 0;
+  BFX_Charge(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 60, 80);
+  PlaySE(charge);
+  wait(90);
+
+  BFX_Explosion(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 80, 30);
+  PlaySE(rel);
+
+
+  loop(100)
+  {
+    PlaySE(pew2);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle + rand(-2, 2), BL_SMALL_BLUE, 10);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle + 120 + rand(-2, 2), BL_SMALL_BLUE, 10);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle + 240 + rand(-2, 2), BL_SMALL_BLUE, 10);
+    angle += 360/100;
+    wait(2);
+  }
+}
+
+
+task TFinalize
+{
+  //Don't do anything until the boss life = 0
+  while(ObjEnemy_GetInfo(objBoss, INFO_LIFE) > 0)
+  {
+    yield;
+  }
+
+  Obj_Delete(objBoss); //Delete boss
+  DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE); // Immediately delete all shots
+  SetAutoDeleteObject(true); // Auto delete objects
+  CloseScript(GetOwnScriptID()); // Close the script
+  return; //Fuck off
+}
