@@ -15,9 +15,9 @@ let bSpell = true;
 let bgmPath = GetCurrentScriptDirectory() ~ "./bgm/scatmanworld.mp3";
 
 //Sounds
-let shot1 = GetCurrentScriptDirectory() ~ "./se/ATTACK3.wav";
+let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan00.wav";
 let spellCard = GetCurrentScriptDirectory() ~ "./se/SPELLCARD.wav";
-let twinkle = GetCurrentScriptDirectory() ~ "./se/TWINKLE.wav";
+let twinkle = GetCurrentScriptDirectory() ~ "./se/se_kira00.wav";
 
 @Event
 {
