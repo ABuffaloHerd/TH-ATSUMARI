@@ -29,62 +29,87 @@ let count = 0;
 		bSpell = false;
 	}
 
-  // count++;
+  SetCameraPitch(2 * sin (count));
+  SetCameraYaw(2 * cos(count));
+  // SetCameraRoll(count * 0.01);
+  
+
+  count++;
   yield;
 }
 
 task TNormalBackground
 {
-  //Floor
-  let wood = GetCurrentScriptDirectory() ~ "texture/sand.png";
+  //Space background
+  let space = GetCurrentScriptDirectory() ~ "texture/space.png";
 
-  let floor = ObjPrim_Create(OBJ_SPRITE_3D);
-  ObjRender_SetBlendType(floor, BLEND_ALPHA);
-  Obj_SetRenderPriority(floor, 0.22);
-  ObjPrim_SetTexture(floor, wood);
-  // ObjSprite3D_SetSourceRect(floor, 0, 0, 1024, 1024);
-  // ObjSprite3D_SetDestRect(floor, -1024 * tileConst, -1024 * tileConst, 1024 * tileConst, 1024 * tileConst);
-  ObjSprite3D_SetSourceDestRect(floor, 0, 0, 1024 * 8, 1024 * 8);
+  let bgSpace = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(bgSpace, BLEND_ALPHA);
+  Obj_SetRenderPriority(bgSpace, 0.2);
+  ObjPrim_SetTexture(bgSpace, space);
 
-  // Set rotation
-  ObjRender_SetAngleX(floor, 90);
-  ObjRender_SetAngleY(floor, -90);
+  ObjSprite2D_SetSourceRect(bgSpace, 0, 0, 384, 448);
+  ObjSprite2D_SetDestRect(bgSpace, 0, 0, 384, 448);
+  ObjRender_SetPosition(bgSpace, 0, 0, 1);
 
-  ObjRender_SetPosition(floor, 900, -90, 90);
+  //Stars
+  let star = GetCurrentScriptDirectory() ~ "texture/stars-add.png";
+
+  let objStar1 = ObjPrim_Create(OBJ_SPRITE_3D);
+  ObjRender_SetBlendType(objStar1, BLEND_ADD_ARGB);
+  Obj_SetRenderPriority(objStar1, 0.211);
+  ObjPrim_SetTexture(objStar1, star);
+
+  ObjSprite3D_SetSourceDestRect(objStar1, 0, 0, 1024, 1024);
+  ObjRender_SetAngleX(objStar1, 90);
+
+  let objStar2 = ObjPrim_Create(OBJ_SPRITE_3D);
+  ObjRender_SetBlendType(objStar2, BLEND_ADD_ARGB);
+  Obj_SetRenderPriority(objStar2, 0.211);
+  ObjPrim_SetTexture(objStar2, star);
+
+  ObjSprite3D_SetSourceDestRect(objStar2, 0, 0, 1024, 1024);
+  ObjRender_SetAngleX(objStar2, 105);
+  ObjRender_SetPosition(objStar2, 0, 100, 0);
+
+  let objStar3 = ObjPrim_Create(OBJ_SPRITE_3D);
+  ObjRender_SetBlendType(objStar3, BLEND_ADD_ARGB);
+  Obj_SetRenderPriority(objStar3, 0.211);
+  ObjPrim_SetTexture(objStar3, star);
+
+  ObjSprite3D_SetSourceDestRect(objStar3, 0, 0, 1024, 1024);
+  ObjRender_SetAngleY(objStar3, 90);
+  ObjRender_SetAngleZ(objStar3, 90);
+  ObjRender_SetPosition(objStar3, -100, 0, 0);
+
+  let objStar4 = ObjPrim_Create(OBJ_SPRITE_3D);
+  ObjRender_SetBlendType(objStar4, BLEND_ADD_ARGB);
+  Obj_SetRenderPriority(objStar4, 0.211);
+  ObjPrim_SetTexture(objStar4, star);
+
+  ObjSprite3D_SetSourceDestRect(objStar4, 0, 0, 1024, 1024);
+  ObjRender_SetAngleXYZ(objStar4, 0, 90, 90);
+  ObjRender_SetPosition(objStar4, 100, 0, 0);
+
+  let objStar5 = ObjPrim_Create(OBJ_SPRITE_3D);
+  ObjRender_SetBlendType(objStar5, BLEND_ADD_ARGB);
+  Obj_SetRenderPriority(objStar5, 0.211);
+  ObjPrim_SetTexture(objStar5, star);
+
+  ObjSprite3D_SetSourceDestRect(objStar5, 0, 0, 1024, 1024);
+  ObjRender_SetAngleX(objStar5, 90);
+  ObjRender_SetPosition(objStar5, 0, 40, 0);
+
 
   let frame = 0;
 
-  //Sky
-  let sky = GetCurrentScriptDirectory() ~ "texture/clearsky.png";
-
-  let background = ObjPrim_Create(OBJ_SPRITE_2D);
-  ObjRender_SetBlendType(background, BLEND_ALPHA);
-  Obj_SetRenderPriority(background, 0.21);
-  ObjPrim_SetTexture(background, sky);
-
-  ObjSprite2D_SetSourceRect(background, 0, 0, 1024, 4096);
-  ObjSprite2D_SetDestRect(background, 0, 0, 1024, 1024);
-  ObjRender_SetPosition(background, 0, 0, 0);
-
-  //Mountains
-  let mountain = GetCurrentScriptDirectory() ~ "texture/mount1.png";
-
-  let mountains = ObjPrim_Create(OBJ_SPRITE_2D);
-  ObjRender_SetBlendType(mountains, BLEND_ALPHA);
-  Obj_SetRenderPriority(mountains, 0.211);
-  ObjPrim_SetTexture(mountains, mountain);
-
-  ObjSprite2D_SetSourceRect(mountains, 0, 0, 1024, 4096);
-  ObjSprite2D_SetDestRect(mountains, 0, 0, 448, 1024);
-  ObjRender_SetPosition(mountains, 0, 0, 0);
-
   loop
   {
-    //Scroll the ground
-    ObjSprite3D_SetSourceRect(floor, 0, (0 + (frame % 1024) * 0.5) * 8, 1024, (1024 + (frame % 1024) * 0.5) * 8);
-
-    //Scroll the mountains
-    ObjSprite2D_SetSourceRect(mountains, 0 + (frame * -0.3), 0, 448 + (frame * -0.3), 4096);
+    ObjSprite3D_SetSourceRect(objStar1, 0, 0 + frame, 1024, 1024 + frame);
+    ObjSprite3D_SetSourceRect(objStar2, 0, 0 + frame, 1024, 1024 + frame);
+    ObjSprite3D_SetSourceRect(objStar3, 0, 0 + frame, 1024, 1024 + frame);
+    ObjSprite3D_SetSourceRect(objStar4, 0, 0 + frame, 1024, 1024 + frame);
+    ObjSprite3D_SetSourceRect(objStar5, 0, 0 + frame, 1024, 1024 + frame);
 
     frame++;
     yield;
@@ -106,17 +131,37 @@ task TSpellBackground
   ObjSprite2D_SetDestRect(objBG, 0, 0, 384, 448);
   ObjRender_SetPosition(objBG, 0, 0, 1);
 
-  //Psycho effect
-  let psychoBG = GetCurrentScriptDirectory() ~ "texture/spiral-bw.png";
+  // //Psycho effect
+  // let psychoBG = GetCurrentScriptDirectory() ~ "texture/spiral-bw.png";
 
-  let spiral = ObjPrim_Create(OBJ_SPRITE_2D);
-  ObjRender_SetBlendType(spiral, BLEND_ADD_RGB);
-  Obj_SetRenderPriority(spiral, 0.221);
-  ObjPrim_SetTexture(spiral, psychoBG);
+  // let spiral = ObjPrim_Create(OBJ_SPRITE_2D);
+  // ObjRender_SetBlendType(spiral, BLEND_ADD_RGB);
+  // Obj_SetRenderPriority(spiral, 0.221);
+  // ObjPrim_SetTexture(spiral, psychoBG);
 
-  ObjSprite2D_SetSourceRect(spiral, 0, 0, 1024, 1024);
-  ObjSprite2D_SetDestRect(spiral, -512, -512, 512, 512);
-  ObjRender_SetPosition(spiral, GetStgFrameWidth() / 2, GetStgFrameHeight() / 2, 1);
+  // ObjSprite2D_SetSourceRect(spiral, 0, 0, 1024, 1024);
+  // ObjSprite2D_SetDestRect(spiral, -512, -512, 512, 512);
+  // ObjRender_SetPosition(spiral, GetStgFrameWidth() / 2, GetStgFrameHeight() / 2, 1);
+
+  //Better background effect
+  let effect1 = GetCurrentScriptDirectory() ~ "texture/lines.png";
+
+  let bg1 = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(bg1, BLEND_ALPHA);
+  Obj_SetRenderPriority(bg1, 0.222);
+  ObjPrim_SetTexture(bg1, effect1);
+
+  ObjSprite2D_SetSourceRect(bg1, 0, 0, 1024, 1024);
+  ObjSprite2D_SetDestRect(bg1, 0, 0, 1024, 1024);
+
+  let effect2 = GetCurrentScriptDirectory() ~ "texture/gears.png";
+  let bg2 = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(bg2, BLEND_ALPHA);
+  Obj_SetRenderPriority(bg2, 0.221);
+  ObjPrim_SetTexture(bg2, effect2);
+
+  ObjSprite2D_SetSourceRect(bg2, 0, 0, 1024, 1024);
+  ObjSprite2D_SetDestRect(bg2, 0, 0, 1024, 1024);
 
   let alpha = 0;
   let frame = 0;
@@ -137,10 +182,15 @@ task TSpellBackground
     Obj_SetVisible(objBG, alpha > 0);
     ObjRender_SetAlpha(objBG, alpha);
 
-    Obj_SetVisible(spiral, alpha > 0);
-    ObjRender_SetAlpha(spiral, alpha);
+    Obj_SetVisible(bg1, alpha > 0);
+    Obj_SetVisible(bg2, alpha > 0);
+    ObjRender_SetAlpha(bg1, alpha / 3);
+    ObjRender_SetAlpha(bg2, 80);
 
-    ObjRender_SetAngleZ(spiral, frame * 4);
+    // ObjRender_SetAngleZ(spiral, frame * 4);
+    //Scroll bg1
+    ObjSprite2D_SetSourceRect(bg1, 0 + frame, 0, 1024 + frame, 1024);
+    ObjSprite2D_SetSourceRect(bg2, 0, 0 + frame, 1024, 1024 + frame);
 
     frame++;
     yield;
