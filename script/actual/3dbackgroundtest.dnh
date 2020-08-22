@@ -43,7 +43,7 @@ BFX_Init();
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
-  ObjEnemyBossScene_StartSpell(objScene);
+  // ObjEnemyBossScene_StartSpell(objScene);
   
 
   LoadSound(bgm);
