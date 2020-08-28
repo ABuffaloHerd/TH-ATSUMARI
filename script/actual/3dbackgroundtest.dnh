@@ -43,8 +43,8 @@ BFX_Init();
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
-  // ObjEnemyBossScene_StartSpell(objScene);
-  
+  ObjEnemyBossScene_StartSpell(objScene);
+  spellCardTitle("COCK AND BALL TORTURE");
 
   LoadSound(bgm);
 
@@ -82,6 +82,7 @@ task TFinalize
   }
 
   Obj_Delete(objBoss); //Delete boss
+  // Obj_Delete(title);
   DeleteShotAll(TYPE_ALL, TYPE_IMMEDIATE); // Immediately delete all shots
   SetAutoDeleteObject(true); // Auto delete objects
   CloseScript(GetOwnScriptID()); // Close the script
