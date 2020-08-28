@@ -22,16 +22,20 @@ function randInt(x, y)
   return round(rand(x, y));
 }
 
+//Prints and moves spell card title.
 task SpellCardTitle(name)
 {
-  return;
+  return; //Doesn't do anything yet
 }
 
+
+//Handles magic circle
 task drawMagicCircle(objBoss)
 {
   //Magic Circle
   let circleSprite = GetCurrentScriptDirectory() ~ "./sprite/magicCircle.png"; //set texture
-  let magicCircle = ObjPrim_Create(OBJ_SPRITE_2D);
+  let magicCircle = ObjPrim_Create(OBJ_SPRITE_2D); //Create texture
+
   ObjPrim_SetTexture(magicCircle, circleSprite);
   ObjSprite2D_SetSourceRect(magicCircle, 0, 0, 1024, 1024);
   ObjRender_SetScaleXYZ(magicCircle, 0.25, 0.25, 1);
@@ -39,6 +43,7 @@ task drawMagicCircle(objBoss)
   ObjRender_SetBlendType(magicCircle, BLEND_ALPHA);
   ObjRender_SetAlpha(magicCircle, 180);
 
+  //Section makes circle follow boss object
   let counter = 0;
 
   loop
@@ -48,4 +53,10 @@ task drawMagicCircle(objBoss)
     counter++;
     yield;
   }
+}
+
+//Moves object to random position. Upper and lower X and Y accepted.
+task RandMoveObj(object, lowerX, upperX, lowerY, upperY, vel)
+{
+  ObjMove_SetDestAtSpeed(object, rand(lowerX, upperX), rand(lowerY, upperY), vel);
 }
