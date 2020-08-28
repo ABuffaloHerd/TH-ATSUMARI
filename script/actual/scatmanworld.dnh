@@ -142,9 +142,9 @@ task Scatman(obj)
   CreateStraightLaserA1(ObjMove_GetX(obj), ObjMove_GetY(obj), ObjMove_GetAngle(obj), 512, 20, 40, ST_LASER_GREEN, 20);
   wait(10);
   PlaySE(twinkle);
-  loop(10)
+  loop(9)
   {
-    CreateShotA1(ObjMove_GetX(obj), ObjMove_GetY(obj), rand(0.1, 3), angleRef, S_STAR_YELLOW, 1);
+    CreateShotA1(ObjMove_GetX(obj), ObjMove_GetY(obj), rand(1, 3.4), angleRef, S_STAR_YELLOW, 1);
     angleRef += 360/10
   }
   Obj_Delete(obj);
