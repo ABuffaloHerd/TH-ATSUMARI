@@ -23,11 +23,54 @@ function randInt(x, y)
 }
 
 //Prints and moves spell card title.
-task SpellCardTitle(name)
+task spellCardTitle(name)
 {
-  return; //Doesn't do anything yet
-}
+  //Create object
+  let title = ObjText_Create();
 
+  ObjText_SetText(title, name);
+  ObjText_SetFontType(title, "Arial");
+  ObjText_SetHorizontalAlignment(title, ALIGNMENT_LEFT);
+  ObjText_SetMaxWidth(title, 300);
+  ObjText_SetFontSize(title, 12);
+  Obj_SetRenderPriority(title, 0.24);
+
+  //Add a black ass border around it
+  ObjText_SetFontBorderType(title, BORDER_FULL);
+  ObjText_SetFontBorderColor(title, 0, 0, 0);
+  ObjText_SetFontBorderWidth(title, 2);
+
+  //Create a red underline
+  let texPath = GetCurrentScriptDirectory() ~ "./sprite/underline.png";
+  let line = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjRender_SetBlendType(line, BLEND_ALPHA);
+  Obj_SetRenderPriority(line, 0.23);
+  ObjPrim_SetTexture(line, texPath);
+  Obj_SetVisible(line, true);
+
+  ObjSprite2D_SetSourceRect(line, 0, 0, 242, 11);
+  ObjSprite2D_SetDestRect(line, 0, 0, -242, 11);
+
+  //Sets position to bottom of playfield, but in position to move straight up
+  ObjRender_SetPosition(title, 384 - ObjText_GetTotalWidth(title), 448 - ObjText_GetTotalHeight(title), 0);
+  ObjRender_SetPosition(line, 384, 40, 0);
+
+  //Get deltas
+  // let dX = ObjText_GetTotalWidth(text);
+  let upperBound = 40;
+  let alpha = 0;
+  let dY = 448 - upperBound;
+  let currentY = ObjRender_GetY(title);
+
+  while(currentY > upperBound)
+  {
+    currentY -= 8;
+    alpha += 5;
+    ObjRender_SetPosition(title, ObjRender_GetX(title), currentY, 1);
+    ObjRender_SetAlpha(line, alpha);
+    yield;
+  }
+}
 
 //Handles magic circle
 task drawMagicCircle(objBoss)
@@ -56,7 +99,7 @@ task drawMagicCircle(objBoss)
 }
 
 //Moves object to random position. Upper and lower X and Y accepted.
-task RandMoveObj(object, lowerX, upperX, lowerY, upperY, vel)
+task randMoveObj(object, lowerX, upperX, lowerY, upperY, vel)
 {
   ObjMove_SetDestAtSpeed(object, rand(lowerX, upperX), rand(lowerY, upperY), vel);
 }
