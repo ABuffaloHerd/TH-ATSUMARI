@@ -47,6 +47,7 @@ task spellCardTitle(name)
   Obj_SetRenderPriority(line, 0.23);
   ObjPrim_SetTexture(line, texPath);
   Obj_SetVisible(line, true);
+  ObjRender_SetAlpha(line, 0);
 
   ObjSprite2D_SetSourceRect(line, 0, 0, 242, 11);
   ObjSprite2D_SetDestRect(line, 0, 0, -242, 11);
@@ -55,17 +56,29 @@ task spellCardTitle(name)
   ObjRender_SetPosition(title, 384 - ObjText_GetTotalWidth(title), 448 - ObjText_GetTotalHeight(title), 0);
   ObjRender_SetPosition(line, 384, 40, 0);
 
+  //Set the scale of text to two, then shrink it down to one
+  let scale = 2.4;
+  ObjRender_SetScaleXYZ(title, scale, scale, 1);
+  while(scale > 1)
+  {
+    ObjRender_SetScaleXYZ(title, scale, scale, 1);
+    scale -= 0.08;
+    wait(1);
+  }
+
   //Get deltas
-  // let dX = ObjText_GetTotalWidth(text);
   let upperBound = 40;
   let alpha = 0;
-  let dY = 448 - upperBound;
+  // let dY = 448 - upperBound;
   let currentY = ObjRender_GetY(title);
 
   while(currentY > upperBound)
   {
+    if(currentY < (upperBound * 3))
+    {
+      alpha += 17;
+    }
     currentY -= 8;
-    alpha += 5;
     ObjRender_SetPosition(title, ObjRender_GetX(title), currentY, 1);
     ObjRender_SetAlpha(line, alpha);
     yield;
