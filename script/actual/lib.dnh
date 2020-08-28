@@ -21,3 +21,31 @@ function randInt(x, y)
 {
   return round(rand(x, y));
 }
+
+task SpellCardTitle(name)
+{
+  return;
+}
+
+task drawMagicCircle(objBoss)
+{
+  //Magic Circle
+  let circleSprite = GetCurrentScriptDirectory() ~ "./sprite/magicCircle.png"; //set texture
+  let magicCircle = ObjPrim_Create(OBJ_SPRITE_2D);
+  ObjPrim_SetTexture(magicCircle, circleSprite);
+  ObjSprite2D_SetSourceRect(magicCircle, 0, 0, 1024, 1024);
+  ObjRender_SetScaleXYZ(magicCircle, 0.25, 0.25, 1);
+  ObjSprite2D_SetDestCenter(magicCircle);
+  ObjRender_SetBlendType(magicCircle, BLEND_ALPHA);
+  ObjRender_SetAlpha(magicCircle, 180);
+
+  let counter = 0;
+
+  loop
+  {
+    ObjRender_SetPosition(magicCircle, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 0);
+    ObjRender_SetAngleXYZ(magicCircle, 25 * sin(counter), 30 * cos(counter), 4 * counter);
+    counter++;
+    yield;
+  }
+}
