@@ -41,7 +41,7 @@ let C_LASER_GREEN		= 31;
 let C_LASER_YELLOW		= 28;
 let C_LASER_ORANGE		= 27;
 
-// èArrowheads ---------------------------------
+// ÔøΩArrowheads ---------------------------------
 let ARROWHEAD_GRAY		= 42;
 let ARROWHEAD_RED		= 44;
 let ARROWHEAD_PURPLE	= 46;
@@ -52,7 +52,7 @@ let ARROWHEAD_YELLOW	= 55;
 let ARROWHEAD_ORANGE	= 56;
 let ARROWHEAD_WHITE 	= 57;
 
-// òSmall Round Bullets w/ Outer Layer ---------
+// ÔøΩSmall Round Bullets w/ Outer Layer ---------
 let BL_SMALL_GRAY		= 58;
 let BL_SMALL_RED		= 60;
 let BL_SMALL_PURPLE		= 61;
@@ -112,7 +112,7 @@ let D_PELLET_YELLOW		= 214;
 let D_PELLET_ORANGE		= 215;
 let D_PELLET_GRAY		= 216;
 
-// êKunai ------------------------------------
+// ÔøΩKunai ------------------------------------
 let KUNAI_GRAY			= 122;
 let KUNAI_RED			= 124;
 let KUNAI_PURPLE		= 125;
@@ -124,7 +124,7 @@ let KUNAI_YELLOW		= 135;
 let KUNAI_ORANGE		= 136;
 let KUNAI_WHITE 		= 137;
 
-// êIce Shots --------------------------------
+// ÔøΩIce Shots --------------------------------
 let ICE_GRAY			= 138;
 let ICE_RED				= 140;
 let ICE_PURPLE			= 141;

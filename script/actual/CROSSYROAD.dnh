@@ -1,7 +1,7 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["Nonspell 4"]
-#Text["base file for nonspells"] 
+#Title["CROSSY ROAD"]
+#Text["it's like frogger y'know?"] 
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
@@ -11,6 +11,17 @@
 let objBoss;
 let count = 0;
 
+let objScene = GetEnemyBossSceneObjectID();
+
+//sounds
+let pew = GetCurrentScriptDirectory() ~ "se/se_tan01.wav";
+let rel = GetCurrentScriptDirectory() ~ "se/se_enep02.wav";
+let twinkle = GetCurrentScriptDirectory() ~ "se/kira00.wav";
+
+LoadSound(pew);
+LoadSound(rel);
+LoadSound(twinkle);
+
 //initialize bfx library
 BFX_Init();
 
@@ -19,7 +30,7 @@ BFX_Init();
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(2000);
+    SetScriptResult(6500);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -39,6 +50,8 @@ BFX_Init();
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+  ObjEnemyBossScene_StartSpell(objScene);
+  spellCardTitle("CROSSY ROAD");
 
   DrawLoop;
   drawMagicCircle(objBoss);
@@ -50,10 +63,46 @@ BFX_Init();
   //Boss hitbox move to boss center
   ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32);
 
+  if(count % 100 == 0 && count > 50)
+  {
+    shoot;
+  }
+
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
   count++;
   yield;
+}
+
+task garbage(obj)
+{
+  PlaySE(twinkle);
+  let amulets = [170, 172, 174, 173, 176, 178, 180, 183, 184, 185];
+  wait(50);
+  let thisRandWait = rand(30, 60);
+  loop(5)
+  {
+    PlaySE(pew);
+    CreateShotOA1(obj, rand(1, 3), 180, amulets[randInt(0, 9)], 0);
+    CreateShotOA1(obj, 2, rand(1, 3), amulets[randInt(0, 9)], 0);
+    wait(thisRandWait);
+  }
+}
+
+task shoot
+{
+  PlaySE(rel);
+  BFX_Explosion(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 80, 30);
+  let angleT = rand(36, 69);
+  ascent (i in 2..5)
+  {
+    loop(10)
+    {
+      let bullet = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i, angleT, SUPP_AQUA, 2);
+      garbage(bullet);
+      angleT += 360/10;
+    }
+  }
 }
 
 task DrawLoop
@@ -63,8 +112,6 @@ task DrawLoop
   ObjSprite2D_SetSourceRect(objBoss, 10, 2304, 103, 2407); // Spritesheet coords for one texture
   ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
 }
-
-
 
 task TFinalize
 {
