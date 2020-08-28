@@ -4,6 +4,7 @@
 #Text["AAAAAA"] 
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
+#include "./lib.dnh"
 
 //Declare some global variables
 let objBoss;
@@ -36,6 +37,7 @@ let count = 0;
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
 
   DrawLoop;
+  drawMagicCircle(objBoss);
   TFinalize;
 }
 
@@ -124,23 +126,4 @@ task TFinalize
   SetAutoDeleteObject(true); // Auto delete objects
   CloseScript(GetOwnScriptID()); // Close the script
   return; //Fuck off
-}
-
-function wait(n)
-{
-  // Does what it's called
-  loop(n)
-  {
-    yield;
-  }
-}
-
-function GetCenterX()
-{
-  return GetStgFrameWidth() / 2; // Returns half the width of arena
-}
-
-function GetCenterY()
-{
-  return GetStgFrameHeight() / 2; // Returns half the height of the arena
 }

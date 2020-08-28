@@ -37,6 +37,7 @@ let count = 0;
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
 
   DrawLoop;
+  drawMagicCircle(objBoss);
   TFinalize;
 }
 
