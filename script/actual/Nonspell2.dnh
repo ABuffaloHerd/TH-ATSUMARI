@@ -3,7 +3,7 @@
 #Title["Nonspell2"]
 #Text["base file for nonspells"] 
 
-#include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
+#include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
 
 //Declare some global variables
@@ -61,8 +61,8 @@ task Shoot1
 {
   ascent (i in 1..6)
   {
-    let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, 20, -0.2, 0, DS_RICE_M_RED, 4);
-    let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, 160, -0.2, 0, DS_RICE_M_RED, 4);
+    let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, 20, -0.2, 0, ORB_RED, 4);
+    let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, 160, -0.2, 0, ORB_RED, 4);
     bulletMove(obj1);
     bulletMove(obj2);
   }
@@ -70,7 +70,7 @@ task Shoot1
 
 task bulletMove(object)
 {
-  let bullets = [DS_BALL_BS_RED, DS_BALL_BS_ORANGE, DS_BALL_BS_YELLOW, DS_BALL_BS_GREEN];
+  let bullets = [BL_SMALL_RED, BL_SMALL_ORANGE, BL_SMALL_YELLOW, BL_SMALL_GREEN];
 
   while(ObjMove_GetSpeed(object) > 0)
   {

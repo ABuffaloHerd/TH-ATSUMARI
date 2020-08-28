@@ -3,7 +3,7 @@
 #Title["Mash "]
 #Text["A new spellcard appears"] 
 
-#include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
+#include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
 
 //Declare some global variables
@@ -70,7 +70,7 @@ task Shoot1
   {
     let angle = 0;
     let offset = 0;
-    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), rand(1, 4), rand(0, 360), DS_FIRE_RED, 20);
+    CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), rand(1, 4), rand(0, 360), M_FIRE_RED, 20);
   }
 }
 
@@ -81,7 +81,7 @@ task makeItMorePainful
   {
     ascent (i in 1..10)
     {
-      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, angle, DS_BALL_M_ORANGE, 2);
+      CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, angle, A_LARGE_ORANGE, 2);
     }
 
     angle += 360/20;

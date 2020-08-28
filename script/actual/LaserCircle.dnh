@@ -3,7 +3,7 @@
 #Title["Solar Sign \"Sundial Flare\""]
 #Text["Spell 1"] 
 
-#include "script/default_system/Default_ShotConst.txt" //Some bullet graphics
+#include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 
 //Declare some global variables
 let objBoss;
@@ -94,7 +94,7 @@ task Laser
   loop(20)
   {
     angle += rand(0, 3);
-    CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angle, 512, 20, 20, DS_BEAM_YELLOW, 30);
+    CreateStraightLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), angle, 512, 20, 20, ST_LASER_YELLOW, 30);
     angle += 360/20;
     wait(10);
   }
@@ -107,7 +107,7 @@ task ShootRing
 
   loop(20)
   {
-    let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, DS_SCALE_A_ORANGE, 2);
+    let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, ARROWHEAD_ORANGE, 2);
     angleT += 360/20;
     BulletMovement(object);
   }
@@ -117,8 +117,8 @@ task ShootRing
 
 task ExtraSpam
 {
-  let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.3, 0, DS_BALL_M_ORANGE, 4);
-  let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.3, 0, DS_BALL_M_ORANGE, 4);
+  let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.3, 0, S_STAR_ORANGE, 4);
+  let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.3, 0, S_STAR_ORANGE, 4);
   ExtraSpamCommands(obj1);
   ExtraSpamCommands(obj2);
 }
@@ -133,7 +133,7 @@ task ExtraSpamCommands(object)
   let angle = rand(0, 6);
   loop(30)
   {
-    CreateShotA2(ObjMove_GetX(object), ObjMove_GetY(object), 4, angle, -0.3, -6, DS_NEEDLE_SKY, 40);
+    CreateShotA2(ObjMove_GetX(object), ObjMove_GetY(object), 4, angle, -0.3, -6, A_AMULET_AQUA, 40);
     angle += 360/30;
   }
   
