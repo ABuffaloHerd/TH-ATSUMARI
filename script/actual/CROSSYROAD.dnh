@@ -14,13 +14,14 @@ let count = 0;
 let objScene = GetEnemyBossSceneObjectID();
 
 //sounds
-let pew = GetCurrentScriptDirectory() ~ "se/se_tan01.wav";
-let rel = GetCurrentScriptDirectory() ~ "se/se_enep02.wav";
-let twinkle = GetCurrentScriptDirectory() ~ "se/kira00.wav";
+let shot = GetCurrentScriptDirectory() ~ "se/se_tan01.wav";
+let plode = GetCurrentScriptDirectory() ~ "se/se_enep02.wav";
+let kira = GetCurrentScriptDirectory() ~ "se/kira00.wav";
 
-LoadSound(pew);
-LoadSound(rel);
-LoadSound(twinkle);
+let pew = CreateSoundObject(shot, 30);
+let rel = CreateSoundObject(plode, 30);
+let twinkle = CreateSoundObject(kira, 30);
+
 
 //initialize bfx library
 BFX_Init();
@@ -76,13 +77,13 @@ BFX_Init();
 
 task garbage(obj)
 {
-  PlaySE(twinkle);
+  PlaySoundObject(twinkle);
   let amulets = [170, 172, 174, 173, 176, 178, 180, 183, 184, 185];
   wait(50);
   let thisRandWait = rand(30, 60);
   loop(5)
   {
-    PlaySE(pew);
+    PlaySoundObject(pew);
     CreateShotOA1(obj, rand(1, 3), 180, amulets[randInt(0, 9)], 0);
     CreateShotOA1(obj, 2, rand(1, 3), amulets[randInt(0, 9)], 0);
     wait(thisRandWait);
@@ -91,7 +92,7 @@ task garbage(obj)
 
 task shoot
 {
-  PlaySE(rel);
+  PlaySoundObject(rel);
   BFX_Explosion(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 80, 30);
   let angleT = rand(36, 69);
   ascent (i in 2..5)
