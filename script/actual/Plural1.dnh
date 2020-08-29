@@ -1,7 +1,7 @@
 #TouhouDanmakufu[Plural]
 #ScriptVersion[3]
-#Title["TestFight1"]
-#Text["Sample bossfight"] 
+#Title["The actual fight"]
+#Text["Pain is an excellent teacher"] 
 #Background["/script/actual/bg/bgNormal.dnh"]
 
 
@@ -13,6 +13,7 @@
 @Initialize
 {
   LoadSound(GetCurrentScriptDirectory() ~ "./bgm/06_2_RC2.ogg");
+  SetPlayerLife(20);
   TPlural;
 }
 
@@ -23,18 +24,34 @@
   yield;
 }
 
-task TPlural{
+task TPlural
+{
   let dir = GetCurrentScriptDirectory();
   let obj = ObjEnemyBossScene_Create();
   ObjEnemyBossScene_Add(obj, 0, dir ~ "./Nonspell1.dnh");
   ObjEnemyBossScene_Add(obj, 0, dir ~ "./LaserCircle.dnh");
+
   ObjEnemyBossScene_Add(obj, 1, dir ~ "./Nonspell2.dnh");
-  ObjEnemyBossScene_Add(obj, 1, dir ~ "./Mash.dnh");
+  ObjEnemyBossScene_Add(obj, 1, dir ~ "./bruh.dnh");
+
   ObjEnemyBossScene_Add(obj, 2, dir ~ "./Nonspell3.dnh");
   ObjEnemyBossScene_Add(obj, 2, dir ~ "./Sine.dnh");
   
+  ObjEnemyBossScene_Add(obj, 3, dir ~ "./preScatman.dnh");
   ObjEnemyBossScene_Add(obj, 3, dir ~ "./scatmanworld.dnh");
-  ObjEnemyBossScene_Add(obj, 3, dir ~ "./20.dnh");
+
+  
+  ObjEnemyBossScene_Add(obj, 4, dir ~ "./Nonspell4.dnh");
+  ObjEnemyBossScene_Add(obj, 4, dir ~ "./20.dnh");
+
+
+  ObjEnemyBossScene_Add(obj, 5, dir ~ "./Nonspell5.dnh");
+  ObjEnemyBossScene_Add(obj, 5, dir ~ "./CROSSYROAD.dnh");
+  ObjEnemyBossScene_Add(obj, 5, dir ~ "./Curvylaser.dnh");
+  
+  ObjEnemyBossScene_Add(obj, 6, dir ~ "./Circle.dnh");
+
+
 
   ObjEnemyBossScene_Regist(obj);
 
