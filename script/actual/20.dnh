@@ -20,13 +20,14 @@ let laser = GetCurrentScriptDirectory() ~ "se/se_lazer00.wav";
 let pew = GetCurrentScriptDirectory() ~ "se/se_tan01.wav";
 let pew2 = GetCurrentScriptDirectory() ~ "se/se_tan02.wav";
 
+
 let charge = GetCurrentScriptDirectory() ~ "se/se_charge.wav";
 let rel = GetCurrentScriptDirectory() ~ "se/se_enep02.wav";
 
+let seSpam = CreateSoundObject(pew2, 40);
 
 LoadSound(laser);
 LoadSound(pew);
-LoadSound(pew2);
 LoadSound(charge);
 LoadSound(rel);
 
@@ -35,7 +36,7 @@ LoadSound(rel);
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(6000);
+    SetScriptResult(5400);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -145,7 +146,7 @@ task spam
 
   loop(100)
   {
-    PlaySE(pew2);
+    PlaySoundObject(seSpam);
     CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle + rand(-2, 2), BL_SMALL_BLUE, 10);
     CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle + 120 + rand(-2, 2), BL_SMALL_BLUE, 10);
     CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 2, angle + 240 + rand(-2, 2), BL_SMALL_BLUE, 10);
