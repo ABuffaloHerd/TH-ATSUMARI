@@ -2,7 +2,7 @@
 #ScriptVersion[3]
 #Title["Curvy laser"]
 #Text["Curvy lasers are fun and good to look at."] 
-#Background["/script/actual/bg/3dtest.dnh"]
+// #Background["/script/actual/bg/3dtest.dnh"]
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
@@ -10,13 +10,20 @@
 //Declare some global variables
 let objBoss;
 let count = 0;
+let objScene = GetEnemyBossSceneObjectID();
+
+let laser = GetCurrentScriptDirectory() ~ "./se/se_lazer00.wav";
+let twinkle = GetCurrentScriptDirectory() ~ "./se/se_kira00.wav";
+
+let lazer1 = CreateSoundObject(laser, 40);
+let kira = CreateSoundObject(twinkle, 50);
 
 @Event
 {
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(6000);
+    SetScriptResult(4560);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -36,6 +43,8 @@ let count = 0;
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+
+  ObjEnemyBossScene_StartSpell(objScene);
 
   DrawLoop;
   TFinalize;
@@ -70,6 +79,7 @@ task lasercurve
   loop(30)
   {
     //Create laser
+    PlaySoundObject(lazer1);
     let laser = CreateCurveLaserA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleInit, 40, 18, C_LASER_PURPLE, 1);
     ObjCrLaser_SetTipDecrement(laser, 0); //make the tip of the laser visible
 
@@ -129,6 +139,8 @@ task morePain
   //Actual shooting of new amulets
   let angle = GetAngleToPlayer(objBoss) - 90;
   let randOffset = rand(-40, 40);
+
+  PlaySoundObject(kira);
   loop(30)
   {
     let newAmulet = CreateShotA1(ObjMove_GetX(amulet), ObjMove_GetY(amulet), 5, angle, A_AMULET_BLUE, 2);
