@@ -2,21 +2,27 @@
 #ScriptVersion[3]
 #Title["Circle Shot"]
 #Text["base file for nonspells"] 
-#Background["./bg/scatman.txt"]
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
 
 //Declare some global variables
 let objBoss;
+let objScene = GetEnemyBossSceneObjectID();
 let count = 0;
+let first = false;
+
+//Call loadsound from library
+let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan02.wav";
+
+let sound1 = CreateSoundObject(shot1, 30);
 
 @Event
 {
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(2000);
+    SetScriptResult(10000);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -34,8 +40,13 @@ let count = 0;
   objBoss = ObjEnemy_Create(OBJ_ENEMY_BOSS);
   ObjEnemy_Regist(objBoss);
 
-  //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
-  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 90, 60);
+  ObjEnemyBossScene_StartSpell(objScene);
+
+  spellCardTitle("Circle Sign &quot;Eye of Cthulhu&quot; ");
+  // spellCardTitle("Arguably the most painful spell i came up with ");
+
+  drawMagicCircle(objBoss);
 
   DrawLoop;
   TFinalize;
@@ -48,11 +59,16 @@ let count = 0;
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
-
+  if(count > 60 && not(first))
+  {
+    count = 230;
+    first = true;
+  }
   
 
   if(count % 240 == 0 && count > 60)
   {
+    PlaySoundObject(sound1);
     circleShot;
   }
 
@@ -89,7 +105,7 @@ task extraSpam
     return;
   }
 
-  loop(50)
+  loop(40)
   {
     ascent (i in 1..5)
     {
@@ -104,7 +120,7 @@ task extraSpam
       }
     }
 
-    angle += 360/50;
+    angle += 360/40;
   }
 }
 
