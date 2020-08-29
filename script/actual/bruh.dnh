@@ -50,7 +50,7 @@ let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
   ObjEnemy_Regist(objBoss);
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
-  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 120, 60);
 
   //load sounds
   LoadSound(shot1);
@@ -61,6 +61,7 @@ let charge = GetCurrentScriptDirectory() ~ "./se/se_charge.wav";
   LoadSound(charge);
 
   ObjEnemyBossScene_StartSpell(objScene); // Begin spellcard  
+  spellCardTitle("Moment of Inertia &quot;Bruh Moment&quot; ");
 
   DrawLoop;
   drawMagicCircle(objBoss);
