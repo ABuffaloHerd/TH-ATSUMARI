@@ -48,7 +48,7 @@ let twinkle = GetCurrentScriptDirectory() ~ "./se/se_kira00.wav";
   LoadSound(spellCard);
   PlaySE(spellCard);
 
-  spellCardTitle("Scatman's World")
+  spellCardTitle("Scatman's World");
 
   //Load sounds
   LoadSound(shot1);
