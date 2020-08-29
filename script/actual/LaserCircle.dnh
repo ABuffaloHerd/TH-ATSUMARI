@@ -4,18 +4,30 @@
 #Text["Spell 1"] 
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
+#include "./lib.dnh"
 
 //Declare some global variables
 let objBoss;
 let objScene = GetEnemyBossSceneObjectID();
 let count = 0;
 
+//Sound
+let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan01.wav";
+let shot2 = GetCurrentScriptDirectory() ~ "./se/se_tan00.wav";
+let twinkle = GetCurrentScriptDirectory() ~ "./se/se_kira00.wav";
+let laser = GetCurrentScriptDirectory() ~ "./se/se_boon00.wav";
+
+let tan1 = CreateSoundObject(shot1, 40);
+let tan2 = CreateSoundObject(shot2, 40);
+let kira = CreateSoundObject(twinkle, 40);
+let boon = CreateSoundObject(laser, 50);
+
 @Event
 {
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(4500);
+    SetScriptResult(4000);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -64,11 +76,6 @@ let count = 0;
     ExtraSpam;
   }
 
-  if(count > 200 && count % 169 == 0)
-  {
-    randomMovement;
-  }
-
   count++;
   yield;
 }
@@ -107,6 +114,7 @@ task ShootRing
 
   loop(20)
   {
+    PlaySoundObject(tan2);
     let object = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angleT, ARROWHEAD_ORANGE, 2);
     angleT += 360/20;
     BulletMovement(object);
@@ -117,6 +125,7 @@ task ShootRing
 
 task ExtraSpam
 {
+  PlaySoundObject(tan2);
   let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 20, -0.3, 0, S_STAR_ORANGE, 4);
   let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 10, 160, -0.3, 0, S_STAR_ORANGE, 4);
   ExtraSpamCommands(obj1);
@@ -151,6 +160,7 @@ task BulletMovement(bullet)
 
   ObjMove_SetAngle(bullet, GetAngleToPlayer(bullet));
   wait(10);
+  PlaySoundObject(kira);
   ObjMove_SetSpeed(bullet, 7);
 
   while(ObjMove_GetSpeed(bullet) > 0) 
@@ -160,8 +170,10 @@ task BulletMovement(bullet)
 
   ObjMove_SetAcceleration(bullet, 0);
   wait(10);
+  PlaySoundObject(kira);
   ObjMove_SetSpeed(bullet, 10);
 }
+
 //Finishing task
 task TFinalize
 {
@@ -182,23 +194,4 @@ task TFinalize
   SetAutoDeleteObject(true); // Auto delete objects
   CloseScript(GetOwnScriptID()); // Close the script
   return; //Fuck off
-}
-
-function wait(n)
-{
-  // Does what it's called
-  loop(n)
-  {
-    yield;
-  }
-}
-
-function GetCenterX()
-{
-  return GetStgFrameWidth() / 2; // Returns half the width of arena
-}
-
-function GetCenterY()
-{
-  return GetStgFrameHeight() / 2; // Returns half the height of the arena
 }
