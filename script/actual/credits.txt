@@ -1,0 +1,4 @@
+BFX / BFX Library - darkwalker247 - http://bulletforge.herokuapp.com/u/darkwalker247/p/bloom-effects-library-now-events-based
+shot / ZUN Shotsheet - ExPorygon -http://bulletforge.herokuapp.com/u/ozzy/p/zun-expanded-shotsheet-for-ph3
+se / Sound effects taken from Touhou games. All by ZUN
+sprite / th16.png - ripped by LochSnesMonster from Touhou 16 (by ZUN)
