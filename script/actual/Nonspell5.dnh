@@ -1,7 +1,7 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["Mash "]
-#Text["A new spellcard appears"] 
+#Title["Nonspell 5"]
+#Text["Asdf"] 
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
 #include "./lib.dnh"
@@ -16,7 +16,7 @@ let count = 0;
   alternative(GetEventType())
   case(EV_REQUEST_LIFE)
   {
-    SetScriptResult(5000);
+    SetScriptResult(2000);
   }
   case(EV_REQUEST_TIMER)
   {
@@ -36,7 +36,8 @@ let count = 0;
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
   ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
-  ObjEnemyBossScene_StartSpell(objScene);
+
+  drawMagicCircle(objBoss);
   DrawLoop;
   TFinalize;
 }
