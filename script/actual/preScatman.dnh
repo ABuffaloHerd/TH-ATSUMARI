@@ -1,6 +1,6 @@
 #TouhouDanmakufu[Single]
 #ScriptVersion[3]
-#Title["base"]
+#Title["beforeScatman"]
 #Text["base file for nonspells"] 
 
 #include "./shot/ZUNShot_Const.txt" //Some bullet graphics
@@ -9,6 +9,13 @@
 //Declare some global variables
 let objBoss;
 let count = 0;
+
+//sound
+let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan02.wav";
+let sound1 = ObjSound_Create();
+ObjSound_Load(sound1, shot1);
+ObjSound_SetSoundDivision(shot1, SOUND_SE);
+ObjSound_SetVolumeRate(sound1, 30);
 
 @Event
 {
@@ -34,8 +41,9 @@ let count = 0;
   ObjEnemy_Regist(objBoss);
 
   //Move the boss to center of the screen: 0, 60 in 60 frames (1 second)
-  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 60, 60);
+  ObjMove_SetDestAtFrame(objBoss, GetCenterX(), 100, 60);
 
+  drawMagicCircle(objBoss);
   DrawLoop;
   TFinalize;
 }
@@ -44,6 +52,11 @@ let count = 0;
 {
   //Boss hitbox move to boss center
   ObjEnemy_SetIntersectionCircleToShot(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 32);
+
+  if(count > 60 && count % 2 == 0)
+  {
+    MakeItRain;
+  }
 
   //Player hitbox 
   ObjEnemy_SetIntersectionCircleToPlayer(objBoss, ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 24);
@@ -57,6 +70,12 @@ task DrawLoop
   ObjPrim_SetTexture(objBoss, image); // Set objBoss texture to imgRumia
   ObjSprite2D_SetSourceRect(objBoss, 10, 2304, 103, 2407); // Spritesheet coords for one texture
   ObjSprite2D_SetDestCenter(objBoss); // Set the center of the sprite
+}
+
+task MakeItRain
+{
+  ObjSound_Play(sound1);
+  CreateShotA2(rand(0, 384), 0, 1, rand(45, 135), 0.5, 4.9, STAR_ORANGE, 4);
 }
 
 task TFinalize
