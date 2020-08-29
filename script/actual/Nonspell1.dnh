@@ -10,6 +10,14 @@
 let objBoss;
 let count = 0;
 
+//Sound
+let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan01.wav";
+let shot2 = GetCurrentScriptDirectory() ~ "./se/se_tan00.wav";
+let twinkle = GetCurrentScriptDirectory() ~ "./se/se_kira00.wav";
+let tan1 = CreateSoundObject(shot1, 40);
+let tan2 = CreateSoundObject(shot2, 40);
+let kira = CreateSoundObject(twinkle, 40);
+
 @Event
 {
   alternative(GetEventType())
@@ -68,6 +76,7 @@ task shootfive
   let angle = GetAngleToPlayer(objBoss);
   loop(15)
   {
+    PlaySoundObject(tan1);
     loop(25)
     {
       CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 30, angle, -2, 5, LARGE_RED, 20);
@@ -79,6 +88,7 @@ task shootfive
 
 task bigpew
 {
+  PlaySoundObject(tan2);
   let angle = 0;
   let obj1 = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 20, 0, LARGE_PURPLE, 2);
   let obj2 = CreateShotA1(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 20, 180, LARGE_PURPLE, 2);
@@ -96,6 +106,7 @@ task bigPewMovements(object)
   }
 
   let theta = GetAngleToPlayer(objBoss);
+  PlaySoundObject(kira);
   loop(15)
   {
     CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 5, theta, BL_SMALL_BLUE, 10);

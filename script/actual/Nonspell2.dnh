@@ -10,6 +10,12 @@
 let objBoss;
 let count = 0;
 
+let shot2 = GetCurrentScriptDirectory() ~ "./se/se_tan00.wav";
+let twinkle = GetCurrentScriptDirectory() ~ "./se/se_kira00.wav";
+
+let pew = CreateSoundObject(shot2, 30);
+let kira = CreateSoundObject(twinkle, 40);
+
 @Event
 {
   alternative(GetEventType())
@@ -62,6 +68,7 @@ task Shoot1
 {
   ascent (i in 1..6)
   {
+    PlaySoundObject(pew);
     let obj1 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, 20, -0.2, 0, ORB_RED, 4);
     let obj2 = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), i * 2, 160, -0.2, 0, ORB_RED, 4);
     bulletMove(obj1);
@@ -91,6 +98,7 @@ task bulletMove(object)
   let angleTheta = rand(0, 360);
   loop(10)
   {
+    PlaySoundObject(kira);
     CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), rand(1, 3), angleTheta, bullets[randInt(0, 3)], 10);
     angleTheta += 360 / 10;
   }
