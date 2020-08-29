@@ -116,3 +116,20 @@ task randMoveObj(object, lowerX, upperX, lowerY, upperY, vel)
 {
   ObjMove_SetDestAtSpeed(object, rand(lowerX, upperX), rand(lowerY, upperY), vel);
 }
+
+//Creates and returns sound object ID
+function CreateSoundObject(path, volume)
+{
+  let sound = ObjSound_Create();
+  ObjSound_Load(sound, path);
+  ObjSound_SetSoundDivision(sound, SOUND_SE);
+  ObjSound_SetVolumeRate(sound, volume);
+
+  return sound;
+}
+
+//Plays the sound because danmakufu is funny like that
+function PlaySoundObject(object)
+{
+  ObjSound_Play(object);
+}
