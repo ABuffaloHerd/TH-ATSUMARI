@@ -13,10 +13,12 @@ let count = 0;
 let objScene = GetEnemyBossSceneObjectID();
 
 let laser = GetCurrentScriptDirectory() ~ "./se/se_lazer00.wav";
+let pew = GetCurrentScriptDirectory() ~ "./se/se_tan00.wav";
 let twinkle = GetCurrentScriptDirectory() ~ "./se/se_kira00.wav";
 
 let lazer1 = CreateSoundObject(laser, 40);
-let kira = CreateSoundObject(twinkle, 50);
+let shot1 = CreateSoundObject(pew, 40);
+let kira = CreateSoundObject(twinkle, 60);
 
 @Event
 {
@@ -140,7 +142,7 @@ task morePain
   let angle = GetAngleToPlayer(objBoss) - 90;
   let randOffset = rand(-40, 40);
 
-  PlaySoundObject(kira);
+  PlaySoundObject(shot1);
   loop(30)
   {
     let newAmulet = CreateShotA1(ObjMove_GetX(amulet), ObjMove_GetY(amulet), 5, angle, A_AMULET_BLUE, 2);
@@ -157,7 +159,7 @@ task newAmuletMove(bullet, offset)
   {
     yield;
   }
-  
+  PlaySoundObject(kira);
   ObjMove_SetAcceleration(bullet, 0);
   ObjMove_SetSpeed(bullet, 3);
   ObjMove_SetAngle(bullet, ObjMove_GetAngle(bullet) + offset)
