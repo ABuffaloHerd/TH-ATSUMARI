@@ -13,9 +13,15 @@ let count = 0;
 let first = false;
 
 //Call loadsound from library
-let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan02.wav";
+let shot1 = GetCurrentScriptDirectory() ~ "./se/se_tan00.wav";
+let shot2 = GetCurrentScriptDirectory() ~ "./se/se_tan01.wav";
+let shot3 = GetCurrentScriptDirectory() ~ "./se/se_tan02.wav";
+let kira = GetCurrentScriptDirectory() ~ "./se/se_kira00.wav";
 
 let sound1 = CreateSoundObject(shot1, 30);
+let sound2 = CreateSoundObject(shot2, 30);
+let sound3 = CreateSoundObject(shot3, 30);
+let sound4 = CreateSoundObject(kira, 30);
 
 @Event
 {
@@ -68,7 +74,6 @@ let sound1 = CreateSoundObject(shot1, 30);
 
   if(count % 240 == 0 && count > 60)
   {
-    PlaySoundObject(sound1);
     circleShot;
   }
 
@@ -82,6 +87,8 @@ task circleShot
   loop(30)
   {
     let angle2 = angle;
+
+    PlaySoundObject(sound2);
     loop(8)
     {
       let obj = CreateShotA2(ObjMove_GetX(objBoss), ObjMove_GetY(objBoss), 5, angle2, -0.1, 0, BL_SMALL_PURPLE, 2);
@@ -105,6 +112,7 @@ task extraSpam
     return;
   }
 
+  PlaySoundObject(sound1);
   loop(40)
   {
     ascent (i in 1..5)
@@ -136,10 +144,12 @@ task bulletChange(object)
   {
     return;
   }
+  PlaySoundObject(sound4);
   CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 2, ObjMove_GetAngle(object), SUPP_BLUE, 1);
   CreateShotA1(ObjMove_GetX(object), ObjMove_GetY(object), 1, ObjMove_GetAngle(object) * -1, SUPP_PURPLE, 1);
   Obj_Delete(object);
 }
+
 task DrawLoop
 {
   let image = GetCurrentScriptDirectory() ~ "./sprite/th16.png"; // Set okina
