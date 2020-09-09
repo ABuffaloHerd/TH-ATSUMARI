@@ -1,2 +1,6 @@
-Scripts are stored under /script/
-More folders will be added as I learn the language etc...
+To the marker: 
+Download the entire repository and run th_dnh.exe
+Select Plural (using arrow keys and Z)
+Select "The actual fight"
+
+Alternatively the music is stored in /script/actual/bgm/
