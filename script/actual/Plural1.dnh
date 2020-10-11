@@ -12,7 +12,7 @@
 
 @Initialize
 {
-  LoadSound(GetCurrentScriptDirectory() ~ "./bgm/06_2_RC3.ogg");
+  LoadSound(GetCurrentScriptDirectory() ~ "./bgm/06_2_Final.ogg");
   SetPlayerLife(20);
   TPlural;
 }
@@ -20,7 +20,7 @@
 
 @MainLoop
 {
-  PlayBGM(GetCurrentScriptDirectory() ~ "./bgm/06_2_RC3.ogg", 11.63, 395);
+  PlayBGM(GetCurrentScriptDirectory() ~ "./bgm/06_2_Final.ogg", 11.63, 395);
   yield;
 }
 
